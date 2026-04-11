@@ -1,5 +1,5 @@
 import {ROLES_KEY} from "@/auth/decorators/roles.decorator";
-import {JwtUser} from "@/auth/types/jwt-user";
+import {JwtUser} from "@/auth/types";
 import {
 	CanActivate,
 	ExecutionContext,

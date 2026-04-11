@@ -9,13 +9,10 @@ import * as bcrypt from "bcrypt";
 
 import {CreateUserDto} from "./dto/create-user.dto";
 import {UpdateUserDto} from "./dto/update-user.dto";
+import {PublicUser} from "./types";
 
-type UserRow = {
+type PrivateUser = {
 	id: number; email : string; password_hash : string; role : string;
-};
-
-type PublicUserRow = {
-	id: number; email : string; role : string;
 };
 
 @Injectable() export class UsersService
@@ -24,18 +21,18 @@ type PublicUserRow = {
 	                    private readonly saltRounds = getEnv( "HASH_SALT_ROUNDS=10", Number ) )
 	{}
 
-	public async findAll(): Promise< PublicUserRow[] >
+	public async findAll(): Promise< PublicUser[] >
 	{
-		return this.databaseService.queryMany< PublicUserRow >(
+		return this.databaseService.queryMany< PublicUser >(
 		    `SELECT id, email, role
 			 FROM users
 			 ORDER BY id ASC`,
 		);
 	}
 
-	public async findOne( id: number ): Promise< PublicUserRow >
+	public async findOne( id: number ): Promise< PublicUser >
 	{
-		const user = await this.databaseService.queryOne< PublicUserRow >(
+		const user = await this.databaseService.queryOne< PublicUser >(
 		    `SELECT id, email, role
 			 FROM users
 			 WHERE id = $1`,
@@ -50,7 +47,7 @@ type PublicUserRow = {
 		return user;
 	}
 
-	public async create( dto: CreateUserDto ): Promise< PublicUserRow >
+	public async create( dto: CreateUserDto ): Promise< PublicUser >
 	{
 		const existingUser = await this.findByEmail( dto.email );
 		if ( existingUser )
@@ -60,7 +57,7 @@ type PublicUserRow = {
 
 		const passwordHash = await bcrypt.hash( dto.password, this.saltRounds );
 
-		const createdUser = await this.databaseService.queryOne< PublicUserRow >(
+		const createdUser = await this.databaseService.queryOne< PublicUser >(
 		    `INSERT INTO users ( email, password_hash, role )
 			 VALUES ( $1, $2, $3 )
 			 RETURNING id, email, role`,
@@ -78,9 +75,9 @@ type PublicUserRow = {
 	public async update(
 	    id: number,
 	    dto: UpdateUserDto,
-	    ): Promise< PublicUserRow >
+	    ): Promise< PublicUser >
 	{
-		const existingUser = await this.databaseService.queryOne< UserRow >(
+		const existingUser = await this.databaseService.queryOne< PrivateUser >(
 		    `SELECT id, email, password_hash, role
 			 FROM users
 			 WHERE id = $1`,
@@ -96,7 +93,7 @@ type PublicUserRow = {
 			throw new ConflictException( `User with email ${dto.email} already exists` );
 		}
 
-		const updatedUser = await this.databaseService.queryOne< PublicUserRow >(
+		const updatedUser = await this.databaseService.queryOne< PublicUser >(
 		    `UPDATE users
 			 SET email = $2,
 			     password_hash = $3,
@@ -133,9 +130,9 @@ type PublicUserRow = {
 		}
 	}
 
-	public async findByEmail( email: string ): Promise< UserRow|null >
+	public async findByEmail( email: string ): Promise< PrivateUser|null >
 	{
-		return this.databaseService.queryOne< UserRow >(
+		return this.databaseService.queryOne< PrivateUser >(
 		    `SELECT id, email, password_hash, role FROM users WHERE email = $1`, [ email ] );
 	}
 

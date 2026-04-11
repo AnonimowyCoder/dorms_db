@@ -1,4 +1,4 @@
-import {JwtUser} from "@/auth/types/jwt-user";
+import {JwtUser} from "@/auth/types";
 import {createParamDecorator, ExecutionContext} from "@nestjs/common";
 
 export const CurrentUser = createParamDecorator(

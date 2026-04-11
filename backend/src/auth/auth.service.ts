@@ -7,7 +7,7 @@ import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 
 import {LoginDto} from "./dto/login.dto";
-import {JwtPayload} from "./jwt.strategy";
+import {JwtPayload} from "./types";
 
 type LoginResponse = {
 	access_token: string; user : { id : number; email : string; role : string; };
