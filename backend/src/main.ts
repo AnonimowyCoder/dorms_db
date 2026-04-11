@@ -8,6 +8,7 @@ import {getEnv} from './utility/get-env';
 async function bootstrap()
 {
 	const app = await NestFactory.create( AppModule );
+	app.enableShutdownHooks();
 
 	const serverPort = getEnv( 'BACKEND_PORT', Number );
 	await app.listen( serverPort );

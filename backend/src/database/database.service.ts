@@ -5,23 +5,16 @@ import {
 	OnModuleDestroy,
 	OnModuleInit,
 } from "@nestjs/common";
-import * as pg from 'pg';
+import {Pool, PoolClient, QueryResult, QueryResultRow} from 'pg';
 
 @Injectable() export class DatabaseService implements OnModuleInit, OnModuleDestroy
 {
 	private readonly logger = new Logger( DatabaseService.name );
-	private readonly pool: pg.Pool;
+	private readonly pool: Pool;
 
 	public constructor()
 	{
-		const connectionString = getEnv( 'DATABASE_URL', String );
-
-		this.pool = new pg.Pool( {
-			connectionString,
-			ssl : {
-				rejectUnauthorized : false,
-			},
-		} );
+		this.pool = this.createPool();
 	}
 
 	public async onModuleInit(): Promise< void >
@@ -44,16 +37,90 @@ import * as pg from 'pg';
 		this.logger.log( "Database pool closed" );
 	}
 
-	public async query< T extends pg.QueryResultRow >(
+	public async queryOne< T extends QueryResultRow >(
 	    text: string,
 	    params: unknown[] = [],
-	    ): Promise< pg.QueryResult< T >>
+	    ): Promise< T|null >
+	{
+		const result = await this.query< T >( text, params );
+		return result.rows[ 0 ] ?? null;
+	}
+
+	public async queryMany< T extends QueryResultRow >(
+	    text: string,
+	    params: unknown[] = [],
+	    ): Promise< T[] >
+	{
+		const result = await this.query< T >( text, params );
+		return result.rows;
+	}
+
+	public async queryValue< T >(
+	    text: string,
+	    params: unknown[] = [],
+	    ): Promise< T|null >
+	{
+		const result = await this.pool.query< Record< string, T >>( text, params );
+		const row    = result.rows[ 0 ];
+
+		if ( !row )
+		{
+			return null;
+		}
+
+		const firstKey = Object.keys( row )[ 0 ];
+		return firstKey ? row[ firstKey ] : null;
+	}
+
+	public async query< T extends QueryResultRow >(
+	    text: string,
+	    params: unknown[] = [],
+	    ): Promise< QueryResult< T >>
 	{
 		return this.pool.query< T >( text, params );
 	}
 
-	public getPool(): pg.Pool
+	private createPool(): Pool
 	{
-		return this.pool;
+		const connectionString = getEnv( 'DATABASE_URL', String );
+
+		return new Pool( {
+			connectionString,
+			ssl : {
+				rejectUnauthorized : false,
+			},
+		} );
+	}
+
+	public async withTransaction< T >(
+	    callback: ( client: PoolClient ) => Promise< T >,
+	    ): Promise< T >
+	{
+		const client = await this.pool.connect();
+
+		try
+		{
+			await client.query( "BEGIN" );
+			const result = await callback( client );
+			await client.query( "COMMIT" );
+			return result;
+		}
+		catch ( error )
+		{
+			try
+			{
+				await client.query( "ROLLBACK" );
+			}
+			catch ( rollbackError )
+			{
+				this.logger.error( "Transaction rollback failed", rollbackError );
+			}
+
+			throw error;
+		}
+		finally
+		{
+			client.release();
+		}
 	}
 }
