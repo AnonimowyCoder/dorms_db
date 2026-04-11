@@ -133,7 +133,7 @@ type PublicUserRow = {
 		}
 	}
 
-	private async findByEmail( email: string ): Promise< UserRow|null >
+	public async findByEmail( email: string ): Promise< UserRow|null >
 	{
 		return this.databaseService.queryOne< UserRow >(
 		    `SELECT id, email, password_hash, role FROM users WHERE email = $1`, [ email ] );
