@@ -1,3 +1,4 @@
+import {Roles} from "@/auth/decorators/roles.decorator";
 import {
 	Body,
 	Controller,
@@ -13,7 +14,7 @@ import {CreateResidentDto} from "./dto/create-resident.dto";
 import {UpdateResidentDto} from "./dto/update-resident.dto";
 import {ResidentsService} from "./residents.service";
 
-@Controller( "residents" ) export class ResidentsController
+@Roles( "admin", "manager" ) @Controller( "residents" ) export class ResidentsController
 {
 	public constructor( private readonly residentsService: ResidentsService ) {}
 

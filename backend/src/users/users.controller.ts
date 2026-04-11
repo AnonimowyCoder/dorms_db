@@ -1,3 +1,4 @@
+import {Roles} from "@/auth/decorators/roles.decorator";
 import {
 	Body,
 	Controller,
@@ -13,7 +14,7 @@ import {CreateUserDto} from "./dto/create-user.dto";
 import {UpdateUserDto} from "./dto/update-user.dto";
 import {UsersService} from "./users.service";
 
-@Controller( "users" ) export class UsersController
+@Roles( "admin" ) @Controller( "users" ) export class UsersController
 {
 	public constructor( private readonly usersService: UsersService ) {}
 
@@ -22,12 +23,18 @@ import {UsersService} from "./users.service";
 		return this.usersService.findAll();
 	}
 
-	@Get( ":id" ) public findOne( @Param( "id", ParseIntPipe ) id: number )
+	@Get( ":id" )
+	public findOne(
+	    @Param( "id", ParseIntPipe ) id: number,
+	)
 	{
 		return this.usersService.findOne( id );
 	}
 
-	@Post() public create( @Body() dto: CreateUserDto )
+	@Post()
+	public create(
+	    @Body() dto: CreateUserDto,
+	)
 	{
 		return this.usersService.create( dto );
 	}
@@ -41,7 +48,10 @@ import {UsersService} from "./users.service";
 		return this.usersService.update( id, dto );
 	}
 
-	@Delete( ":id" ) public remove( @Param( "id", ParseIntPipe ) id: number )
+	@Delete( ":id" )
+	public remove(
+	    @Param( "id", ParseIntPipe ) id: number,
+	)
 	{
 		return this.usersService.remove( id );
 	}
