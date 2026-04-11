@@ -29,6 +29,18 @@ import {Pool, PoolClient, QueryResult, QueryResultRow} from 'pg';
 			this.logger.error( "Failed to connect to database", error );
 			throw error;
 		}
+
+		try
+		{
+			const searchPath = getEnv( "DATABASE_SEARCH_PATH", String );
+			await this.query( `SET search_path TO ${searchPath}` );
+			this.logger.log( "search_path is set to public" )
+		}
+		catch ( error )
+		{
+			this.logger.error( "Failed to set search_path", error );
+			throw error;
+		}
 	}
 
 	public async onModuleDestroy(): Promise< void >

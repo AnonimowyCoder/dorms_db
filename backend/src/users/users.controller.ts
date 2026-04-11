@@ -1,4 +1,3 @@
-import {CurrentUser} from "@/auth/decorators/current-user.decorator";
 import {Roles} from "@/auth/decorators/roles.decorator";
 import {
 	Body,
@@ -13,7 +12,6 @@ import {
 
 import {CreateUserDto} from "./dto/create-user.dto";
 import {UpdateUserDto} from "./dto/update-user.dto";
-import type {PublicUser} from "./types";
 import {UsersService} from "./users.service";
 
 @Roles( "admin" ) @Controller( "users" ) export class UsersController
@@ -56,10 +54,5 @@ import {UsersService} from "./users.service";
 	)
 	{
 		return this.usersService.remove( id );
-	}
-
-	@Get( "me" ) public me( @CurrentUser() user: PublicUser )
-	{
-		return user;
 	}
 }

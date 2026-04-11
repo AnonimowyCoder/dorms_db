@@ -35,7 +35,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
 # Get one user
-GET {{baseUrl}}/users/1
+GET {{baseUrl}}/users/2
 Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
@@ -46,19 +46,19 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 
 {
   "email": "manager1@example.com",
-  "password": "secret123",
+  "password": "password123",
   "role": "manager"
 }
 
 ###
 # Update user
-PATCH {{baseUrl}}/users/1
+PATCH {{baseUrl}}/users/3
 Authorization: Bearer {{login.response.body.$.access_token}}
 {{json}}
 
 {
-  "email": "admin-updated@example.com",
-  "role": "admin"
+  "email": "manager1@example.com",
+  "role": "manager"
 }
 
 ###
@@ -89,9 +89,9 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 {{json}}
 
 {
-  "first_name": "Jan",
-  "last_name": "Kowalski",
-  "department": "Computer Science"
+  "first_name": "Json",
+  "last_name": "Therulo",
+  "department": "Nuclear Physics"
 }
 
 ###
@@ -101,7 +101,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 {{json}}
 
 {
-  "department": "Mathematics"
+  "department": "science"
 }
 
 ###
