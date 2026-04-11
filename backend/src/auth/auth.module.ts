@@ -1,4 +1,4 @@
-import {DatabaseModule} from "@/database/database.module";
+import {UsersModule} from "@/users/users.module";
 import {getEnv} from "@/utility/get-env";
 import {Module} from "@nestjs/common";
 import {JwtModule} from "@nestjs/jwt";
@@ -9,7 +9,7 @@ import {JwtStrategy} from "./jwt.strategy";
 
 @Module( {
 	imports : [
-		DatabaseModule,
+		UsersModule,
 		JwtModule.register( {
 			secret : getEnv( "JWT_SECRET", String ),
 			signOptions : {

@@ -17,9 +17,9 @@ type PrivateUser = {
 
 @Injectable() export class UsersService
 {
-	public constructor( private readonly databaseService: DatabaseService,
-	                    private readonly saltRounds = getEnv( "HASH_SALT_ROUNDS=10", Number ) )
-	{}
+	private readonly saltRounds = getEnv( "HASH_SALT_ROUNDS", Number );
+
+	public constructor( private readonly databaseService: DatabaseService ) {}
 
 	public async findAll(): Promise< PublicUser[] >
 	{
