@@ -77,7 +77,15 @@ import {Pool, PoolClient, QueryResult, QueryResultRow} from 'pg';
 	    params: unknown[] = [],
 	    ): Promise< QueryResult< T >>
 	{
-		return this.pool.query< T >( text, params );
+		try
+		{
+			return await this.pool.query< T >( text, params );
+		}
+		catch ( error )
+		{
+			this.logger.error( `Query failed. SQL: ${text}. | Params: ${JSON.stringify( params )}. | Error: ${error}` );
+			throw error;
+		}
 	}
 
 	private createPool(): Pool
