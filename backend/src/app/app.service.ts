@@ -4,6 +4,6 @@ import {Injectable} from '@nestjs/common';
 {
 	getHello(): string
 	{
-		return 'Hello World!';
+		return 'Hello. Check backend/src/test/request.http for list of endpoints';
 	}
 }
