@@ -1,9 +1,6 @@
 import {DatabaseService} from "@/database/database.service";
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-} from "@nestjs/common";
+import {RoomCategoriesService} from "@/room-categories/room-categories.service";
+import {Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateRoomDto} from "./dto/create-room.dto";
 import {UpdateRoomDto} from "./dto/update-room.dto";
@@ -27,7 +24,11 @@ type AvailableRoomRow = RoomRow&
 
 @Injectable() export class RoomsService
 {
-	public constructor( private readonly databaseService: DatabaseService ) {}
+	public constructor(
+	    private readonly databaseService: DatabaseService,
+	    private readonly roomCategoriesService: RoomCategoriesService,
+	)
+	{}
 
 	public async findAll(): Promise< RoomRow[] >
 	{
@@ -111,19 +112,7 @@ type AvailableRoomRow = RoomRow&
 
 	public async create( dto: CreateRoomDto ): Promise< RoomRow >
 	{
-		const categoryExists = await this.databaseService.queryOne< { id : number } >(
-		    `SELECT id
-			 FROM room_categories
-			 WHERE id = $1`,
-		    [ dto.id_category ],
-		);
-
-		if ( !categoryExists )
-		{
-			throw new BadRequestException(
-			    `Room category with id ${dto.id_category} does not exist`,
-			);
-		}
+		await this.roomCategoriesService.ensureExists( dto.id_category );
 
 		const room = await this.databaseService.queryOne< BasicRoomRow >(
 		    `INSERT INTO rooms ( room_number, floor_number, num_of_beds, id_category )
@@ -163,20 +152,7 @@ type AvailableRoomRow = RoomRow&
 		}
 
 		const nextCategoryId = dto.id_category ?? existingRoom.id_category;
-
-		const categoryExists = await this.databaseService.queryOne< { id : number } >(
-		    `SELECT id
-			 FROM room_categories
-			 WHERE id = $1`,
-		    [ nextCategoryId ],
-		);
-
-		if ( !categoryExists )
-		{
-			throw new BadRequestException(
-			    `Room category with id ${nextCategoryId} does not exist`,
-			);
-		}
+		await this.roomCategoriesService.ensureExists( nextCategoryId );
 
 		const updatedRoom = await this.databaseService.queryOne< BasicRoomRow >(
 		    `UPDATE rooms

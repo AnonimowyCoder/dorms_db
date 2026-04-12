@@ -1,11 +1,15 @@
 import {DatabaseModule} from "@/database/database.module";
+import {RoomCategoriesModule} from "@/room-categories/room-categories.module";
 import {Module} from "@nestjs/common";
 
 import {RoomsController} from "./rooms.controller";
 import {RoomsService} from "./rooms.service";
 
 @Module( {
-	imports : [ DatabaseModule ],
+	imports : [
+		DatabaseModule,
+		RoomCategoriesModule,
+	],
 	controllers : [ RoomsController ],
 	providers : [ RoomsService ],
 } )

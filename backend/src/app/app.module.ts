@@ -3,6 +3,7 @@ import {JwtAuthGuard} from "@/auth/guards/jwt-auth.guard";
 import {RolesGuard} from "@/auth/guards/roles.guard";
 import {DatabaseModule} from "@/database/database.module";
 import {ResidentsModule} from "@/residents/residents.module";
+import {RoomCategoriesModule} from "@/room-categories/room-categories.module";
 import {RoomsModule} from "@/rooms/rooms.module";
 import {UsersModule} from "@/users/users.module";
 import {Module} from "@nestjs/common";
@@ -13,11 +14,12 @@ import {AppService} from "./app.service";
 
 @Module( {
 	imports : [
-		DatabaseModule,
 		AuthModule,
-		UsersModule,
+		DatabaseModule,
 		ResidentsModule,
+		RoomCategoriesModule,
 		RoomsModule,
+		UsersModule,
 	],
 	controllers : [ AppController ],
 	providers : [

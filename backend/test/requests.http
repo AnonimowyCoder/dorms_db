@@ -127,7 +127,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
 # Get one room
-GET {{baseUrl}}/rooms/1
+GET {{baseUrl}}/rooms/2
 Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
@@ -140,7 +140,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
   "room_number": 101,
   "floor_number": 1,
   "num_of_beds": 2,
-  "id_category": 1
+  "id_category": 2
 }
 
 ###
@@ -156,4 +156,49 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Delete room
 DELETE {{baseUrl}}/rooms/1
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# =========================
+# ROOM CATEGORIES
+# Read: admin or manager
+# Write: admin only
+# =========================
+
+###
+# Get all room categories
+GET {{baseUrl}}/room-categories
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# Get one room category
+GET {{baseUrl}}/room-categories/1
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# Create room category
+POST {{baseUrl}}/room-categories
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "monthly_rent": 500,
+  "if_kitchen": true,
+  "category_name": "Standard"
+}
+
+###
+# Update room category
+PATCH {{baseUrl}}/room-categories/2
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "monthly_rent": 600,
+  "category_name": "Comfort"
+}
+
+###
+# Delete room category
+DELETE {{baseUrl}}/room-categories/2
 Authorization: Bearer {{login.response.body.$.access_token}}
