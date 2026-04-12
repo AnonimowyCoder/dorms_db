@@ -8,6 +8,7 @@ import {ResidentsService} from "./residents.service";
 	imports : [ DatabaseModule ],
 	controllers : [ ResidentsController ],
 	providers : [ ResidentsService ],
+	exports : [ ResidentsService ],
 } )
 export class ResidentsModule
 {}

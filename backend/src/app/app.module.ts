@@ -4,6 +4,7 @@ import {RolesGuard} from "@/auth/guards/roles.guard";
 import {DatabaseModule} from "@/database/database.module";
 import {ResidentsModule} from "@/residents/residents.module";
 import {RoomCategoriesModule} from "@/room-categories/room-categories.module";
+import {RoomReservationsModule} from "@/room-reservations/room-reservations.module";
 import {RoomsModule} from "@/rooms/rooms.module";
 import {UsersModule} from "@/users/users.module";
 import {Module} from "@nestjs/common";
@@ -18,6 +19,7 @@ import {AppService} from "./app.service";
 		DatabaseModule,
 		ResidentsModule,
 		RoomCategoriesModule,
+		RoomReservationsModule,
 		RoomsModule,
 		UsersModule,
 	],

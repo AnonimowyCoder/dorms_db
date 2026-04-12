@@ -192,4 +192,9 @@ type AvailableRoomRow = RoomRow&
 			throw new NotFoundException( `Room with id ${id} not found` );
 		}
 	}
+
+	public async ensureExists( id: number ): Promise< void >
+	{
+		await this.findOne( id );
+	}
 }

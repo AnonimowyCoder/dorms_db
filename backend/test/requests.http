@@ -202,3 +202,51 @@ Content-Type: application/json
 # Delete room category
 DELETE {{baseUrl}}/room-categories/2
 Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# =========================
+# ROOM RESERVATIONS
+# =========================
+
+###
+# Get all reservations
+GET {{baseUrl}}/room-reservations
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# Get one reservation
+GET {{baseUrl}}/room-reservations/1
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# Create reservation
+POST {{baseUrl}}/room-reservations
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "start_date_reserv": "2026-05-11",
+  "end_date_reserv": "2026-06-10",
+  "id_room": 4,
+  "id_resident": 2
+}
+
+###
+# Update reservation
+PATCH {{baseUrl}}/room-reservations/1
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "end_date_reserv": "2026-05-15"
+}
+
+###
+# Delete reservation
+DELETE {{baseUrl}}/room-reservations/5
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+
+# NOTES
+# Admin can delete himself live and create a new account.
+# Its possible to reserve the same period of time as the same person. (Maybe keep maybe not - kinda like one person took both spaces in the room)

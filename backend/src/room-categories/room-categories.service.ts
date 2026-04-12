@@ -122,7 +122,7 @@ import {RoomCategory} from "./types";
 		}
 	}
 
-	public async ensureExists( id: number )
+	public async ensureExists( id: number ): Promise< void >
 	{
 		await this.findOne( id );
 	}

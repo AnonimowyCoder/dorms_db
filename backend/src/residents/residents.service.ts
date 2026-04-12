@@ -97,4 +97,9 @@ type ResidentRow = {
 			throw new NotFoundException( `Resident with id ${id} not found` );
 		}
 	}
+
+	public async ensureExists( id: number ): Promise< void >
+	{
+		await this.findOne( id );
+	}
 }
