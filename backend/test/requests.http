@@ -290,7 +290,6 @@ Content-Type: application/json
 DELETE {{baseUrl}}/equipment/1
 Authorization: Bearer {{login.response.body.$.access_token}}
 
-
 # NOTES
 # Admin can delete himself live and create a new account.
 # Its possible to reserve the same period of time as the same person. (Maybe keep maybe not - kinda like one person took both spaces in the room)
