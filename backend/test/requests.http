@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:3001
 @json = Content-Type: application/json
+@auth = Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
 # Health check
@@ -8,7 +9,7 @@ GET {{baseUrl}}
 ###
 # @name login
 POST {{baseUrl}}/auth/login
-Content-Type: application/json
+{{json}}
 
 {
   "email": "admin@example.com",
@@ -20,7 +21,7 @@ Content-Type: application/json
 ###
 # Get current authenticated user
 GET {{baseUrl}}/auth/me
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # =========================
@@ -31,17 +32,17 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all users
 GET {{baseUrl}}/users
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one user
-GET {{baseUrl}}/users/2
-Authorization: Bearer {{login.response.body.$.access_token}}
+GET {{baseUrl}}/users/3
+{{auth}}
 
 ###
 # Create user
 POST {{baseUrl}}/users
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 {{json}}
 
 {
@@ -53,7 +54,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Update user
 PATCH {{baseUrl}}/users/3
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 {{json}}
 
 {
@@ -64,7 +65,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Delete user
 DELETE {{baseUrl}}/users/2
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # =========================
@@ -75,17 +76,17 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all residents
 GET {{baseUrl}}/residents
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one resident
 GET {{baseUrl}}/residents/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Create resident
 POST {{baseUrl}}/residents
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 {{json}}
 
 {
@@ -97,7 +98,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Update resident
 PATCH {{baseUrl}}/residents/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 {{json}}
 
 {
@@ -107,7 +108,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Delete resident
 DELETE {{baseUrl}}/residents/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # =========================
@@ -118,26 +119,26 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all rooms
 GET {{baseUrl}}/rooms
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get available rooms
 GET {{baseUrl}}/rooms/available
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one room
 GET {{baseUrl}}/rooms/2
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Create room
 POST {{baseUrl}}/rooms
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 {{json}}
 
 {
-  "room_number": 101,
+  "room_number": 201,
   "floor_number": 1,
   "num_of_beds": 2,
   "id_category": 2
@@ -146,7 +147,7 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Update room
 PATCH {{baseUrl}}/rooms/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 {{json}}
 
 {
@@ -155,8 +156,8 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
 # Delete room
-DELETE {{baseUrl}}/rooms/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+DELETE {{baseUrl}}/rooms/2
+{{auth}}
 
 ###
 # =========================
@@ -168,18 +169,18 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all room categories
 GET {{baseUrl}}/room-categories
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one room category
 GET {{baseUrl}}/room-categories/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Create room category
 POST {{baseUrl}}/room-categories
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "monthly_rent": 500,
@@ -190,8 +191,8 @@ Content-Type: application/json
 ###
 # Update room category
 PATCH {{baseUrl}}/room-categories/2
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "monthly_rent": 600,
@@ -201,7 +202,7 @@ Content-Type: application/json
 ###
 # Delete room category
 DELETE {{baseUrl}}/room-categories/2
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # =========================
@@ -211,22 +212,22 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all reservations
 GET {{baseUrl}}/room-reservations
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one reservation
 GET {{baseUrl}}/room-reservations/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Create reservation
 POST {{baseUrl}}/room-reservations
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
-  "start_date_reserv": "2026-05-11",
-  "end_date_reserv": "2026-06-10",
+  "start_date_reserv": "2026-06-11",
+  "end_date_reserv": "2026-07-10",
   "id_room": 4,
   "id_resident": 2
 }
@@ -234,8 +235,8 @@ Content-Type: application/json
 ###
 # Update reservation
 PATCH {{baseUrl}}/room-reservations/1
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "end_date_reserv": "2026-05-15"
@@ -243,8 +244,8 @@ Content-Type: application/json
 
 ###
 # Delete reservation
-DELETE {{baseUrl}}/room-reservations/5
-Authorization: Bearer {{login.response.body.$.access_token}}
+DELETE {{baseUrl}}/room-reservations/6
+{{auth}}
 
 ###
 # =========================
@@ -254,18 +255,18 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all equipment
 GET {{baseUrl}}/equipment
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one equipment item
 GET {{baseUrl}}/equipment/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Create equipment
 POST {{baseUrl}}/equipment
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "equipment_name": "Desk Lamp",
@@ -276,8 +277,8 @@ Content-Type: application/json
 ###
 # Update equipment
 PATCH {{baseUrl}}/equipment/1
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "equipment_name": "LED Desk Lamp",
@@ -288,7 +289,7 @@ Content-Type: application/json
 ###
 # Delete equipment
 DELETE {{baseUrl}}/equipment/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # =========================
@@ -298,18 +299,18 @@ Authorization: Bearer {{login.response.body.$.access_token}}
 ###
 # Get all parking lots
 GET {{baseUrl}}/parking-lots
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Get one parking lot
 GET {{baseUrl}}/parking-lots/1
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 ###
 # Create parking lot
 POST {{baseUrl}}/parking-lots
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "parking_lot_type": "covered",
@@ -319,8 +320,8 @@ Content-Type: application/json
 ###
 # Update parking lot
 PATCH {{baseUrl}}/parking-lots/1
-Authorization: Bearer {{login.response.body.$.access_token}}
-Content-Type: application/json
+{{auth}}
+{{json}}
 
 {
   "placement": "Building B - north side"
@@ -329,8 +330,11 @@ Content-Type: application/json
 ###
 # Delete parking lot
 DELETE {{baseUrl}}/parking-lots/2
-Authorization: Bearer {{login.response.body.$.access_token}}
+{{auth}}
 
 # NOTES
 # Admin can delete himself live and create a new account.
 # Its possible to reserve the same period of time as the same person. (Maybe keep maybe not - kinda like one person took both spaces in the room)
+# Maybe unique room numbers.
+
+# Add number to equipment.
