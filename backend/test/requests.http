@@ -226,15 +226,15 @@ POST {{baseUrl}}/room-reservations
 {{json}}
 
 {
-  "start_date_reserv": "2026-06-11",
-  "end_date_reserv": "2026-07-10",
+  "start_date_reserv": "2026-07-11",
+  "end_date_reserv": "2026-08-10",
   "id_room": 4,
   "id_resident": 2
 }
 
 ###
 # Update reservation
-PATCH {{baseUrl}}/room-reservations/1
+PATCH {{baseUrl}}/room-reservations/13
 {{auth}}
 {{json}}
 
@@ -244,7 +244,7 @@ PATCH {{baseUrl}}/room-reservations/1
 
 ###
 # Delete reservation
-DELETE {{baseUrl}}/room-reservations/6
+DELETE {{baseUrl}}/room-reservations/12
 {{auth}}
 
 ###
@@ -332,9 +332,56 @@ PATCH {{baseUrl}}/parking-lots/1
 DELETE {{baseUrl}}/parking-lots/2
 {{auth}}
 
+###
+# =========================
+# PARKING RESERVATIONS
+# =========================
+
+###
+# Get all parking reservations
+GET {{baseUrl}}/parking-reservations
+{{auth}}
+
+###
+# Get one parking reservation
+GET {{baseUrl}}/parking-reservations/1
+{{auth}}
+
+###
+# Create parking reservation
+POST {{baseUrl}}/parking-reservations
+{{auth}}
+{{json}}
+
+{
+  "start_date_reserv": "2026-05-15",
+  "end_date_reserv": "2026-05-20",
+  "id_parking_lot": 1,
+  "id_resident": 1
+}
+
+###
+# Update parking reservation
+PATCH {{baseUrl}}/parking-reservations/2
+{{auth}}
+{{json}}
+
+{
+  "start_date_reserv": "2026-05-10",
+  "end_date_reserv": "2026-05-12"
+}
+
+###
+# Delete parking reservation
+DELETE {{baseUrl}}/parking-reservations/1
+{{auth}}
+
 # NOTES
 # Admin can delete himself live and create a new account.
 # Its possible to reserve the same period of time as the same person. (Maybe keep maybe not - kinda like one person took both spaces in the room)
 # Maybe unique room numbers.
+# Available should care about 'when and part of reservation not room.
+# Add available to parking reservation.
+# Parking lot reservation date overlap seems to not be by day accurate.
 
 # Add number to equipment.
