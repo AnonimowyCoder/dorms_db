@@ -1,6 +1,8 @@
+import {JwtUser} from "@/auth/types";
 import {DatabaseService} from "@/database/database.service";
 import {getEnv} from "@/utility/get-env";
 import {
+	BadRequestException,
 	ConflictException,
 	Injectable,
 	NotFoundException,
@@ -116,8 +118,13 @@ type PrivateUser = {
 		return updatedUser;
 	}
 
-	public async remove( id: number ): Promise< void >
+	public async remove( id: number, currentUser: JwtUser ): Promise< void >
 	{
+		if ( id === currentUser.sub )
+		{
+			throw new BadRequestException( "You cannot delete your own account" );
+		}
+
 		const result = await this.databaseService.query(
 		    `DELETE FROM users
 			 WHERE id = $1`,

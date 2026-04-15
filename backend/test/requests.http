@@ -64,7 +64,7 @@ PATCH {{baseUrl}}/users/3
 
 ###
 # Delete user
-DELETE {{baseUrl}}/users/2
+DELETE {{baseUrl}}/users/1
 {{auth}}
 
 ###
@@ -141,7 +141,7 @@ POST {{baseUrl}}/rooms
   "room_number": 201,
   "floor_number": 1,
   "num_of_beds": 2,
-  "id_category": 2
+  "id_category": 1
 }
 
 ###
@@ -226,10 +226,10 @@ POST {{baseUrl}}/room-reservations
 {{json}}
 
 {
-  "start_date_reserv": "2026-07-11",
-  "end_date_reserv": "2026-08-10",
-  "id_room": 4,
-  "id_resident": 2
+  "start_date_reserv": "2026-10-21",
+  "end_date_reserv": "2026-10-25",
+  "id_room": 1,
+  "id_resident": 1
 }
 
 ###
@@ -281,7 +281,7 @@ PATCH {{baseUrl}}/equipment/1
 {{json}}
 
 {
-  "equipment_name": "LED Desk Lamp",
+  "equipment_name": "Desk Lamp",
   "description": "LED bedside lamp",
   "count": 1
 }
@@ -377,9 +377,8 @@ DELETE {{baseUrl}}/parking-reservations/1
 {{auth}}
 
 # NOTES
-# Admin can delete himself live and create a new account.
 # Its possible to reserve the same period of time as the same person. (Maybe keep maybe not - kinda like one person took both spaces in the room)
-# Maybe unique room numbers.
+# Unique room numbers - add to DB.
 # Available should care about 'when and part of reservation not room.
 # Add available to parking reservation.
 # Parking lot reservation date overlap seems to not be by day accurate.

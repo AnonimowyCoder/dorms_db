@@ -56,6 +56,8 @@ import {RoomReservation} from "./types";
 		ensureDateRangeIsValid( dto.start_date_reserv, dto.end_date_reserv );
 		await this.roomsService.ensureExists( dto.id_room );
 		await this.residentsService.ensureExists( dto.id_resident );
+		await this.ensureResidentHasNoOverlappingReservation( dto.id_resident, dto.start_date_reserv,
+		                                                      dto.end_date_reserv );
 		await this.ensureIsAvailable( dto.id_room, dto.start_date_reserv, dto.end_date_reserv );
 
 		const created = await this.databaseService.queryOne< RoomReservation >(
@@ -98,6 +100,7 @@ import {RoomReservation} from "./types";
 		ensureDateRangeIsValid( nextStartDate, nextEndDate );
 		await this.roomsService.ensureExists( nextRoomId );
 		await this.residentsService.ensureExists( nextResidentId );
+		await this.ensureResidentHasNoOverlappingReservation( nextResidentId, nextStartDate, nextEndDate, id );
 		await this.ensureIsAvailable( nextRoomId, nextStartDate, nextEndDate, id );
 
 		const updatedReservation = await this.databaseService.queryOne< RoomReservation >(
@@ -153,7 +156,6 @@ import {RoomReservation} from "./types";
 	    excludeReservationId?: number,
 	    ): Promise< void >
 	{
-		// FIXME: Figure this one out
 		const room = await this.databaseService.queryOne< { num_of_beds : number } >(
 		    `SELECT num_of_beds
 		 FROM rooms
@@ -180,6 +182,31 @@ import {RoomReservation} from "./types";
 		{
 			throw new BadRequestException(
 			    "Room has no available beds in the selected period",
+			);
+		}
+	}
+
+	private async ensureResidentHasNoOverlappingReservation(
+	    residentId: number,
+	    startDate: string,
+	    endDate: string,
+	    excludeReservationId?: number,
+	    ): Promise< void >
+	{
+		const overlappingCount = await this.databaseService.queryValue< number >(
+		    `SELECT COUNT(*)::int
+		 FROM room_reservations
+		 WHERE id_resident = $1
+		   AND daterange(start_date_reserv, end_date_reserv, '[]')
+		       && daterange($2::date, $3::date, '[]')
+		   AND ($4::int IS NULL OR id <> $4::int)`,
+		    [ residentId, startDate, endDate, excludeReservationId ?? null ],
+		);
+
+		if ( ( overlappingCount ?? 0 ) > 0 )
+		{
+			throw new BadRequestException(
+			    "Resident already has an overlapping room reservation",
 			);
 		}
 	}
