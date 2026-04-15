@@ -271,7 +271,7 @@ POST {{baseUrl}}/equipment
 {
   "equipment_name": "Desk Lamp",
   "description": "LED bedside lamp",
-  "id_signed_on_sticker": 1001
+  "count": 2
 }
 
 ###
@@ -283,7 +283,7 @@ PATCH {{baseUrl}}/equipment/1
 {
   "equipment_name": "LED Desk Lamp",
   "description": "LED bedside lamp",
-  "id_signed_on_sticker": 1011
+  "count": 1
 }
 
 ###
