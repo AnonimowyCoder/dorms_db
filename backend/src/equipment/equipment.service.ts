@@ -12,7 +12,7 @@ import {Equipment} from "./types";
 	public async findAll(): Promise< Equipment[] >
 	{
 		return this.databaseService.queryMany< Equipment >(
-		    `SELECT id, equipment_name, description, id_signed_on_sticker
+		    `SELECT id, equipment_name, description, count
 			 FROM equipment
 			 ORDER BY id ASC`,
 		);
@@ -21,7 +21,7 @@ import {Equipment} from "./types";
 	public async findOne( id: number ): Promise< Equipment >
 	{
 		const equipment = await this.databaseService.queryOne< Equipment >(
-		    `SELECT id, equipment_name, description, id_signed_on_sticker
+		    `SELECT id, equipment_name, description, count
 			 FROM equipment
 			 WHERE id = $1`,
 		    [ id ],
@@ -43,13 +43,13 @@ import {Equipment} from "./types";
 	public async create( dto: CreateEquipmentDto ): Promise< Equipment >
 	{
 		const createdEquipment = await this.databaseService.queryOne< Equipment >(
-		    `INSERT INTO equipment ( equipment_name, description, id_signed_on_sticker )
+		    `INSERT INTO equipment ( equipment_name, description, count )
 			 VALUES ( $1, $2, $3 )
-			 RETURNING id, equipment_name, description, id_signed_on_sticker`,
+			 RETURNING id, equipment_name, description, count`,
 		    [
 			    dto.equipment_name,
 			    dto.description ?? null,
-			    dto.id_signed_on_sticker ?? null,
+			    dto.count,
 		    ],
 		);
 
@@ -72,14 +72,14 @@ import {Equipment} from "./types";
 		    `UPDATE equipment
 			 SET equipment_name = $2,
 			     description = $3,
-			     id_signed_on_sticker = $4
+			     count = $4
 			 WHERE id = $1
-			 RETURNING id, equipment_name, description, id_signed_on_sticker`,
+			 RETURNING id, equipment_name, description, count`,
 		    [
 			    id,
 			    dto.equipment_name ?? existingEquipment.equipment_name,
 			    dto.description ?? existingEquipment.description,
-			    dto.id_signed_on_sticker ?? existingEquipment.id_signed_on_sticker,
+			    dto.count ?? existingEquipment.count,
 		    ],
 		);
 
@@ -103,5 +103,23 @@ import {Equipment} from "./types";
 		{
 			throw new NotFoundException( `Equipment with id ${id} not found` );
 		}
+	}
+
+	public async getAvailableCount( id: number ): Promise< number >
+	{
+		await this.ensureExists( id );
+
+		const availableCount = await this.databaseService.queryValue< number >(
+		    `SELECT
+		     ( e.count - COALESCE( SUM( re.count ), 0 ) )::int
+		 FROM equipment e
+		 LEFT JOIN room_equipment re
+		   ON re.id_equipment = e.id
+		 WHERE e.id = $1
+		 GROUP BY e.id, e.count`,
+		    [ id ],
+		);
+
+		return availableCount ?? 0;
 	}
 }

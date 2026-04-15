@@ -153,6 +153,7 @@ import {RoomReservation} from "./types";
 	    excludeReservationId?: number,
 	    ): Promise< void >
 	{
+		// FIXME: Figure this one out
 		const room = await this.databaseService.queryOne< { num_of_beds : number } >(
 		    `SELECT num_of_beds
 		 FROM rooms
@@ -167,11 +168,11 @@ import {RoomReservation} from "./types";
 
 		const overlappingCount = await this.databaseService.queryValue< number >(
 		    `SELECT COUNT(*)::int
-		 FROM room_reservations
-		 WHERE id_room = $1
-		   AND daterange(start_date_reserv, end_date_reserv, '[]')
+		 	FROM room_reservations
+		 	WHERE id_room = $1
+		   	AND daterange(start_date_reserv, end_date_reserv, '[]')
 		       && daterange($2::date, $3::date, '[]')
-		   AND ($4::int IS NULL OR id <> $4::int)`,
+		   	AND ($4::int IS NULL OR id <> $4::int)`,
 		    [ roomId, startDate, endDate, excludeReservationId ?? null ],
 		);
 
