@@ -139,7 +139,7 @@ POST {{baseUrl}}/rooms
 {{json}}
 
 {
-  "room_number": 201,
+  "room_number": 202,
   "floor_number": 1,
   "num_of_beds": 2,
   "id_category": 1
@@ -147,12 +147,12 @@ POST {{baseUrl}}/rooms
 
 ###
 # Update room
-PATCH {{baseUrl}}/rooms/1
+PATCH {{baseUrl}}/rooms/2
 {{auth}}
 {{json}}
 
 {
-  "num_of_beds": 3
+  "room_number": 201
 }
 
 ###
@@ -381,5 +381,3 @@ DELETE {{baseUrl}}/parking-reservations/1
 # Unique room numbers - add to DB.
 # Available should care about 'when and part of reservation not room.
 # Add available to parking reservation.
-
-# Add number to equipment.

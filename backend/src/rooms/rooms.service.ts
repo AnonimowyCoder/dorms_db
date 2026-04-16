@@ -1,6 +1,6 @@
 import {DatabaseService} from "@/database/database.service";
 import {RoomCategoriesService} from "@/room-categories/room-categories.service";
-import {Injectable, NotFoundException} from "@nestjs/common";
+import {ConflictException, Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateRoomDto} from "./dto/create-room.dto";
 import {UpdateRoomDto} from "./dto/update-room.dto";
@@ -113,6 +113,7 @@ type AvailableRoomRow = RoomRow&
 	public async create( dto: CreateRoomDto ): Promise< RoomRow >
 	{
 		await this.roomCategoriesService.ensureExists( dto.id_category );
+		await this.ensureRoomNumberIsUnique( dto.room_number );
 
 		const room = await this.databaseService.queryOne< BasicRoomRow >(
 		    `INSERT INTO rooms ( room_number, floor_number, num_of_beds, id_category )
@@ -154,6 +155,9 @@ type AvailableRoomRow = RoomRow&
 		const nextCategoryId = dto.id_category ?? existingRoom.id_category;
 		await this.roomCategoriesService.ensureExists( nextCategoryId );
 
+		const nextRoomNumber = dto.room_number ?? existingRoom.room_number;
+		await this.ensureRoomNumberIsUnique( nextRoomNumber );
+
 		const updatedRoom = await this.databaseService.queryOne< BasicRoomRow >(
 		    `UPDATE rooms
 			 SET room_number = $2,
@@ -164,7 +168,7 @@ type AvailableRoomRow = RoomRow&
 			 RETURNING id, room_number, floor_number, num_of_beds, id_category`,
 		    [
 			    id,
-			    dto.room_number ?? existingRoom.room_number,
+			    nextRoomNumber,
 			    dto.floor_number ?? existingRoom.floor_number,
 			    dto.num_of_beds ?? existingRoom.num_of_beds,
 			    nextCategoryId,
@@ -196,5 +200,26 @@ type AvailableRoomRow = RoomRow&
 	public async ensureExists( id: number ): Promise< void >
 	{
 		await this.findOne( id );
+	}
+
+	private async ensureRoomNumberIsUnique(
+	    roomNumber: number,
+	    excludeRoomId?: number,
+	    ): Promise< void >
+	{
+		const existingRoom = await this.databaseService.queryOne< { id : number } >(
+		    `SELECT id
+		 FROM rooms
+		 WHERE room_number = $1
+		   AND ($2::int IS NULL OR id <> $2::int)`,
+		    [ roomNumber, excludeRoomId ?? null ],
+		);
+
+		if ( existingRoom )
+		{
+			throw new ConflictException(
+			    `Room number ${roomNumber} is already in use`,
+			);
+		}
 	}
 }
