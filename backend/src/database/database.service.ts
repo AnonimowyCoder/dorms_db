@@ -1,11 +1,6 @@
 import {getEnv} from "@/utility/get-env";
-import {
-	Injectable,
-	Logger,
-	OnModuleDestroy,
-	OnModuleInit,
-} from "@nestjs/common";
-import {Pool, PoolClient, QueryResult, QueryResultRow} from 'pg';
+import {Injectable, Logger, OnModuleDestroy, OnModuleInit} from "@nestjs/common";
+import {Pool, PoolClient, QueryResult, QueryResultRow, types} from 'pg';
 
 @Injectable() export class DatabaseService implements OnModuleInit, OnModuleDestroy
 {
@@ -14,6 +9,7 @@ import {Pool, PoolClient, QueryResult, QueryResultRow} from 'pg';
 
 	public constructor()
 	{
+		types.setTypeParser( getEnv( `DATE_OID`, Number ), ( value: string ) => value );
 		this.pool = this.createPool();
 	}
 

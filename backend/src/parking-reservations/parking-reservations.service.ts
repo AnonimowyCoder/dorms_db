@@ -96,20 +96,6 @@ import {ParkingReservation} from "./types";
 		const nextParkingLotId = dto.id_parking_lot ?? existingReservation.id_parking_lot;
 		const nextResidentId   = dto.id_resident ?? existingReservation.id_resident;
 
-		if ( !nextStartDate || !nextEndDate )
-		{
-			throw new BadRequestException(
-			    "Reservation must have both start_date_reserv and end_date_reserv",
-			);
-		}
-
-		if ( !nextResidentId )
-		{
-			throw new BadRequestException(
-			    "Reservation must have id_resident",
-			);
-		}
-
 		ensureDateRangeIsValid( nextStartDate, nextEndDate );
 		await this.parkingLotsService.ensureExists( nextParkingLotId );
 		await this.residentsService.ensureExists( nextResidentId );

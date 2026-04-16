@@ -123,6 +123,7 @@ GET {{baseUrl}}/rooms
 
 ###
 # Get available rooms
+# FIXME: A bit stupid to be improved
 GET {{baseUrl}}/rooms/available
 {{auth}}
 
@@ -354,8 +355,8 @@ POST {{baseUrl}}/parking-reservations
 {{json}}
 
 {
-  "start_date_reserv": "2026-05-15",
-  "end_date_reserv": "2026-05-20",
+  "start_date_reserv": "2026-06-20",
+  "end_date_reserv": "2026-06-21",
   "id_parking_lot": 1,
   "id_resident": 1
 }
@@ -377,10 +378,8 @@ DELETE {{baseUrl}}/parking-reservations/1
 {{auth}}
 
 # NOTES
-# Its possible to reserve the same period of time as the same person. (Maybe keep maybe not - kinda like one person took both spaces in the room)
 # Unique room numbers - add to DB.
 # Available should care about 'when and part of reservation not room.
 # Add available to parking reservation.
-# Parking lot reservation date overlap seems to not be by day accurate.
 
 # Add number to equipment.
