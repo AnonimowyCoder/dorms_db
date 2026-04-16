@@ -275,9 +275,9 @@ POST {{baseUrl}}/equipment
 {{json}}
 
 {
-  "equipment_name": "Desk Lamp",
-  "description": "LED bedside lamp",
-  "count": 2
+  "equipment_name": "Legless Chair",
+  "description": "Chair with broken legs",
+  "count": 3
 }
 
 ###
@@ -385,6 +385,43 @@ PATCH {{baseUrl}}/parking-reservations/2
 ###
 # Delete parking reservation
 DELETE {{baseUrl}}/parking-reservations/1
+{{auth}}
+
+###
+# =========================
+# ROOM EQUIPMENT
+# =========================
+
+###
+# Get all room-equipment assignments
+GET {{baseUrl}}/room-equipment
+{{auth}}
+
+###
+# Get equipment assigned to one room
+GET {{baseUrl}}/room-equipment/room/2
+{{auth}}
+
+###
+# Get rooms using equipment type
+GET {{baseUrl}}/room-equipment/equipment/2
+{{auth}}
+
+###
+# Assign equipment units to room
+POST {{baseUrl}}/room-equipment
+{{auth}}
+{{json}}
+
+{
+  "id_room": 2,
+  "id_equipment": 3,
+  "count": 2
+}
+
+###
+# Remove one equipment unit from room
+DELETE {{baseUrl}}/room-equipment/room/1/equipment/1
 {{auth}}
 
 # NOTES

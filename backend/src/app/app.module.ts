@@ -7,6 +7,7 @@ import {ParkingLotsModule} from "@/parking-lots/parking-lots.module";
 import {ParkingReservationsModule} from "@/parking-reservations/parking-reservations.module";
 import {ResidentsModule} from "@/residents/residents.module";
 import {RoomCategoriesModule} from "@/room-categories/room-categories.module";
+import {RoomEquipmentModule} from "@/room-equipment/room-equipment.module";
 import {RoomReservationsModule} from "@/room-reservations/room-reservations.module";
 import {RoomsModule} from "@/rooms/rooms.module";
 import {UsersModule} from "@/users/users.module";
@@ -25,6 +26,7 @@ import {AppService} from "./app.service";
 		ParkingReservationsModule,
 		ResidentsModule,
 		RoomCategoriesModule,
+		RoomEquipmentModule,
 		RoomReservationsModule,
 		RoomsModule,
 		UsersModule,
