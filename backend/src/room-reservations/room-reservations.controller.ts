@@ -1,7 +1,8 @@
 import {Roles} from "@/auth/decorators/roles.decorator";
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query} from "@nestjs/common";
 
 import {CreateRoomReservationDto} from "./dto/create-room-reservation.dto";
+import {GetAvailableRoomsDto} from "./dto/get-available-rooms.dto";
 import {UpdateRoomReservationDto} from "./dto/update-room-reservation.dto";
 import {RoomReservationsService} from "./room-reservations.service";
 
@@ -15,6 +16,11 @@ import {RoomReservationsService} from "./room-reservations.service";
 	@Get() public findAll()
 	{
 		return this.roomReservationsService.findAll();
+	}
+
+	@Get( "available" ) public findAvailableRooms( @Query() query: GetAvailableRoomsDto )
+	{
+		return this.roomReservationsService.findAvailableRooms( query );
 	}
 
 	@Get( ":id" ) public findOne( @Param( "id", ParseIntPipe ) id: number )

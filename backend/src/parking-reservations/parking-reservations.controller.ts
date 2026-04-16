@@ -1,5 +1,6 @@
 import {Roles} from "@/auth/decorators/roles.decorator";
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from "@nestjs/common";
+import {GetAvailableParkingLotsDto} from "@/parking-lots/dto/get-available-parking-lots.dto";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query} from "@nestjs/common";
 
 import {CreateParkingReservationDto} from "./dto/create-parking-reservation.dto";
 import {UpdateParkingReservationDto} from "./dto/update-parking-reservation.dto";
@@ -15,6 +16,11 @@ import {ParkingReservationsService} from "./parking-reservations.service";
 	@Get() public findAll()
 	{
 		return this.parkingReservationsService.findAll();
+	}
+
+	@Get( "available" ) public findAvailableParkingLots( @Query() query: GetAvailableParkingLotsDto )
+	{
+		return this.parkingReservationsService.findAvailableParkingLots( query );
 	}
 
 	@Get( ":id" ) public findOne( @Param( "id", ParseIntPipe ) id: number )

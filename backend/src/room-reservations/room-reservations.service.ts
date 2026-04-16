@@ -2,15 +2,12 @@ import {DatabaseService} from "@/database/database.service";
 import {ResidentsService} from "@/residents/residents.service";
 import {RoomsService} from "@/rooms/rooms.service";
 import {ensureDateRangeIsValid} from "@/utility/date-range";
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-} from "@nestjs/common";
+import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateRoomReservationDto} from "./dto/create-room-reservation.dto";
+import {GetAvailableRoomsDto} from "./dto/get-available-rooms.dto";
 import {UpdateRoomReservationDto} from "./dto/update-room-reservation.dto";
-import {RoomReservation} from "./types";
+import {AvailableRoom, RoomReservation} from "./types";
 
 @Injectable() export class RoomReservationsService
 {
@@ -47,6 +44,44 @@ import {RoomReservation} from "./types";
 		}
 
 		return reservation;
+	}
+
+	public async findAvailableRooms( dto: GetAvailableRoomsDto ): Promise< AvailableRoom[] >
+	{
+		ensureDateRangeIsValid( dto.start_date, dto.end_date );
+
+		return this.databaseService.queryMany< AvailableRoom >(
+		    `SELECT
+		     r.id,
+		     r.room_number,
+		     r.floor_number,
+		     r.num_of_beds,
+		     r.id_category,
+		     rc.monthly_rent,
+		     rc.if_kitchen,
+		     rc.category_name,
+		     COUNT( rr.id )::int AS active_reservations_count,
+		     ( r.num_of_beds - COUNT( rr.id )::int ) AS free_beds
+		 FROM rooms r
+		 JOIN room_categories rc
+		   ON rc.id = r.id_category
+		 LEFT JOIN room_reservations rr
+		   ON rr.id_room = r.id
+		  AND daterange(rr.start_date_reserv, rr.end_date_reserv, '[]')
+		      && daterange($1::date, $2::date, '[]')
+		 GROUP BY
+		     r.id,
+		     r.room_number,
+		     r.floor_number,
+		     r.num_of_beds,
+		     r.id_category,
+		     rc.monthly_rent,
+		     rc.if_kitchen,
+		     rc.category_name
+		 HAVING ( r.num_of_beds - COUNT( rr.id )::int ) > 0
+		 ORDER BY r.id ASC`,
+		    [ dto.start_date, dto.end_date ],
+		);
 	}
 
 	public async create(

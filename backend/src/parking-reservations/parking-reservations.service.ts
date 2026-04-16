@@ -1,5 +1,7 @@
 import {DatabaseService} from "@/database/database.service";
+import {GetAvailableParkingLotsDto} from "@/parking-lots/dto/get-available-parking-lots.dto";
 import {ParkingLotsService} from "@/parking-lots/parking-lots.service";
+import {AvailableParkingLot} from "@/parking-lots/types";
 import {ResidentsService} from "@/residents/residents.service";
 import {ensureDateRangeIsValid} from "@/utility/date-range";
 import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
@@ -26,6 +28,26 @@ import {ParkingReservation} from "./types";
 		);
 	}
 
+	public async findAvailableParkingLots( dto: GetAvailableParkingLotsDto ): Promise< AvailableParkingLot[] >
+	{
+		ensureDateRangeIsValid( dto.start_date, dto.end_date );
+
+		return this.databaseService.queryMany< AvailableParkingLot >(
+		    `SELECT
+		     pl.id,
+		     pl.parking_lot_type,
+		     pl.placement
+		 FROM parking_lots pl
+		 LEFT JOIN parking_reservations pr
+		   ON pr.id_parking_lot = pl.id
+		  AND daterange(pr.start_date_reserv, pr.end_date_reserv, '[]')
+		      && daterange($1::date, $2::date, '[]')
+		 WHERE pr.id IS NULL
+		 ORDER BY pl.id ASC`,
+		    [ dto.start_date, dto.end_date ],
+		);
+	}
+
 	public async findOne( id: number ): Promise< ParkingReservation >
 	{
 		const reservation = await this.databaseService.queryOne< ParkingReservation >(
@@ -43,11 +65,6 @@ import {ParkingReservation} from "./types";
 		}
 
 		return reservation;
-	}
-
-	public async ensureExists( id: number ): Promise< void >
-	{
-		await this.findOne( id );
 	}
 
 	public async create(
@@ -170,5 +187,10 @@ import {ParkingReservation} from "./types";
 			    "Parking lot is not available in the selected period",
 			);
 		}
+	}
+
+	public async ensureExists( id: number ): Promise< void >
+	{
+		await this.findOne( id );
 	}
 }

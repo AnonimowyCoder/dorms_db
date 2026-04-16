@@ -90,9 +90,9 @@ POST {{baseUrl}}/residents
 {{json}}
 
 {
-  "first_name": "Json",
-  "last_name": "Therulo",
-  "department": "Nuclear Physics"
+  "first_name": "Rafał",
+  "last_name": "Zabłotni",
+  "department": "Music"
 }
 
 ###
@@ -123,7 +123,7 @@ GET {{baseUrl}}/rooms
 
 ###
 # Get available rooms
-# FIXME: A bit stupid to be improved
+# NOTE: With dates use /rooms-reservations/available
 GET {{baseUrl}}/rooms/available
 {{auth}}
 
@@ -221,6 +221,11 @@ GET {{baseUrl}}/room-reservations/1
 {{auth}}
 
 ###
+# Get all available reservations in given date
+GET {{baseUrl}}/room-reservations/available?start_date=2026-10-21&end_date=2026-10-25
+{{auth}}
+
+###
 # Create reservation
 POST {{baseUrl}}/room-reservations
 {{auth}}
@@ -230,7 +235,7 @@ POST {{baseUrl}}/room-reservations
   "start_date_reserv": "2026-10-21",
   "end_date_reserv": "2026-10-25",
   "id_room": 1,
-  "id_resident": 1
+  "id_resident": 2
 }
 
 ###
@@ -344,6 +349,11 @@ GET {{baseUrl}}/parking-reservations
 {{auth}}
 
 ###
+# Get all parking reservations
+GET {{baseUrl}}/parking-reservations/available?start_date=2026-07-22&end_date=2026-07-25
+{{auth}}
+
+###
 # Get one parking reservation
 GET {{baseUrl}}/parking-reservations/1
 {{auth}}
@@ -379,5 +389,3 @@ DELETE {{baseUrl}}/parking-reservations/1
 
 # NOTES
 # Unique room numbers - add to DB.
-# Available should care about 'when and part of reservation not room.
-# Add available to parking reservation.
