@@ -1,7 +1,17 @@
 import {Roles} from "@/auth/decorators/roles.decorator";
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post} from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
+} from "@nestjs/common";
 
 import {CreateRoomEquipmentDto} from "./dto/create-room-equipment.dto";
+import {UpdateRoomEquipmentDto} from "./dto/update-room-equipment.dto";
 import {RoomEquipmentService} from "./room-equipment.service";
 
 @Roles( "admin", "manager" ) @Controller( "room-equipment" ) export class RoomEquipmentController
@@ -14,6 +24,20 @@ import {RoomEquipmentService} from "./room-equipment.service";
 	@Get() public findAll()
 	{
 		return this.roomEquipmentService.findAll();
+	}
+
+	@Patch( "room/:roomId/equipment/:equipmentId" )
+	public update(
+	    @Param( "roomId", ParseIntPipe ) roomId: number,
+	    @Param( "equipmentId", ParseIntPipe ) equipmentId: number,
+	    @Body() dto: UpdateRoomEquipmentDto,
+	)
+	{
+		return this.roomEquipmentService.update(
+		    roomId,
+		    equipmentId,
+		    dto.count,
+		);
 	}
 
 	@Get( "room/:roomId" ) public findByRoom( @Param( "roomId", ParseIntPipe ) roomId: number )

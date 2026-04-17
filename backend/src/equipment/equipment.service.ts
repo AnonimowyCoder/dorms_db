@@ -1,5 +1,5 @@
 import {DatabaseService} from "@/database/database.service";
-import {Injectable, NotFoundException} from "@nestjs/common";
+import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateEquipmentDto} from "./dto/create-equipment.dto";
 import {UpdateEquipmentDto} from "./dto/update-equipment.dto";
@@ -61,12 +61,12 @@ import {Equipment} from "./types";
 		return createdEquipment;
 	}
 
-	public async update(
-	    id: number,
-	    dto: UpdateEquipmentDto,
-	    ): Promise< Equipment >
+	public async update( id: number, dto: UpdateEquipmentDto ): Promise< Equipment >
 	{
 		const existingEquipment = await this.findOne( id );
+
+		if ( dto.count !== undefined && dto.count !== null )
+			await this.ensureCountIsNotBelowAssigned( id, dto.count );
 
 		const updatedEquipment = await this.databaseService.queryOne< Equipment >(
 		    `UPDATE equipment
@@ -121,5 +121,25 @@ import {Equipment} from "./types";
 		);
 
 		return availableCount ?? 0;
+	}
+
+	private async ensureCountIsNotBelowAssigned(
+	    equipmentId: number,
+	    newTotalCount: number,
+	    ): Promise< void >
+	{
+		const assignedCount = await this.databaseService.queryValue< number >(
+		    `SELECT COALESCE( SUM( count ), 0 )::int
+		 FROM room_equipment
+		 WHERE id_equipment = $1`,
+		    [ equipmentId ],
+		);
+
+		if ( newTotalCount < ( assignedCount ?? 0 ) )
+		{
+			throw new BadRequestException(
+			    `Equipment count cannot be lower than already assigned count (${assignedCount ?? 0})`,
+			);
+		}
 	}
 }

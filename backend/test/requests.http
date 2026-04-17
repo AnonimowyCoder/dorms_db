@@ -139,7 +139,7 @@ POST {{baseUrl}}/rooms
 {{json}}
 
 {
-  "room_number": 202,
+  "room_number": 122,
   "floor_number": 1,
   "num_of_beds": 2,
   "id_category": 1
@@ -414,14 +414,24 @@ POST {{baseUrl}}/room-equipment
 {{json}}
 
 {
-  "id_room": 2,
-  "id_equipment": 3,
+  "id_room": 1,
+  "id_equipment": 2,
+  "count": 1
+}
+
+###
+# Update room-equipment assignment count
+PATCH {{baseUrl}}/room-equipment/room/1/equipment/2
+{{auth}}
+{{json}}
+
+{
   "count": 2
 }
 
 ###
 # Remove one equipment unit from room
-DELETE {{baseUrl}}/room-equipment/room/1/equipment/1
+DELETE {{baseUrl}}/room-equipment/room/1/equipment/2
 {{auth}}
 
 # NOTES
