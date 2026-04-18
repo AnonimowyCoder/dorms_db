@@ -532,7 +532,3 @@ PATCH {{baseUrl}}/parking-payments/1
 # Delete parking payment
 DELETE {{baseUrl}}/parking-payments/1
 {{auth}}
-
-# NOTES
-# 
-# Unique room numbers - add to DB.

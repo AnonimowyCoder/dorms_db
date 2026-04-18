@@ -230,7 +230,6 @@ ALTER TABLE public.room_reservations ALTER COLUMN id ADD GENERATED ALWAYS AS IDE
     CACHE 1
 );
 
-
 --
 -- TOC entry 236 (class 1259 OID 32834)
 -- Name: rooms; Type: TABLE; Schema: public; Owner: -
@@ -238,12 +237,11 @@ ALTER TABLE public.room_reservations ALTER COLUMN id ADD GENERATED ALWAYS AS IDE
 
 CREATE TABLE public.rooms (
     id integer NOT NULL,
-    room_number integer NOT NULL,
+    room_number integer NOT NULL UNIQUE,
     floor_number integer NOT NULL,
     num_of_beds integer NOT NULL,
     id_category integer NOT NULL
 );
-
 
 --
 -- TOC entry 237 (class 1259 OID 32842)
