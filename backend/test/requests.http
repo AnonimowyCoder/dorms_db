@@ -3,8 +3,16 @@
 @auth = Authorization: Bearer {{login.response.body.$.access_token}}
 
 ###
-# Health check
+# Welcome
 GET {{baseUrl}}
+
+###
+# Health
+GET {{baseUrl}}/health
+
+###
+# Database health
+GET {{baseUrl}}/health/db
 
 ###
 # @name login

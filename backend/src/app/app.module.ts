@@ -3,6 +3,7 @@ import {JwtAuthGuard} from "@/auth/guards/jwt-auth.guard";
 import {RolesGuard} from "@/auth/guards/roles.guard";
 import {DatabaseModule} from "@/database/database.module";
 import {EquipmentModule} from "@/equipment/equipment.module";
+import {HealthModule} from "@/health/health.module";
 import {ParkingLotsModule} from "@/parking-lots/parking-lots.module";
 import {ParkingPaymentsModule} from "@/parking-payments/parking-payments.module";
 import {ParkingReservationsModule} from "@/parking-reservations/parking-reservations.module";
@@ -24,6 +25,7 @@ import {AppService} from "./app.service";
 		AuthModule,
 		DatabaseModule,
 		EquipmentModule,
+		HealthModule,
 		ParkingLotsModule,
 		ParkingPaymentsModule,
 		ParkingReservationsModule,

@@ -2,8 +2,8 @@ import {Injectable} from '@nestjs/common';
 
 @Injectable() export class AppService
 {
-	getHealth(): string
+	getWelcome(): string
 	{
-		return 'Healthy.';
+		return 'Check backend/test/requests.http for endpoints.';
 	}
 }

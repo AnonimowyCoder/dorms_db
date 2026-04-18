@@ -7,8 +7,8 @@ import {AppService} from './app.service';
 {
 	constructor( private readonly appService: AppService ) {}
 
-	@Get() getHello(): string
+	@Get() getWelcome(): string
 	{
-		return this.appService.getHealth();
+		return this.appService.getWelcome();
 	}
 }
