@@ -112,6 +112,52 @@ PATCH {{baseUrl}}/residents/1
 DELETE {{baseUrl}}/residents/1
 {{auth}}
 
+
+###
+# =========================
+# ROOM CATEGORIES
+# Read: admin or manager
+# Write: admin only
+# =========================
+
+###
+# Get all room categories
+GET {{baseUrl}}/room-categories
+{{auth}}
+
+###
+# Get one room category
+GET {{baseUrl}}/room-categories/1
+{{auth}}
+
+###
+# Create room category
+POST {{baseUrl}}/room-categories
+{{auth}}
+{{json}}
+
+{
+  "monthly_rent": 500,
+  "if_kitchen": true,
+  "category_name": "Standard"
+}
+
+###
+# Update room category
+PATCH {{baseUrl}}/room-categories/1
+{{auth}}
+{{json}}
+
+{
+  "monthly_rent": 600,
+  "category_name": "Comfort"
+}
+
+###
+# Delete room category
+DELETE {{baseUrl}}/room-categories/2
+{{auth}}
+
 ###
 # =========================
 # ROOMS
@@ -164,51 +210,6 @@ DELETE {{baseUrl}}/rooms/2
 
 ###
 # =========================
-# ROOM CATEGORIES
-# Read: admin or manager
-# Write: admin only
-# =========================
-
-###
-# Get all room categories
-GET {{baseUrl}}/room-categories
-{{auth}}
-
-###
-# Get one room category
-GET {{baseUrl}}/room-categories/1
-{{auth}}
-
-###
-# Create room category
-POST {{baseUrl}}/room-categories
-{{auth}}
-{{json}}
-
-{
-  "monthly_rent": 500,
-  "if_kitchen": true,
-  "category_name": "Standard"
-}
-
-###
-# Update room category
-PATCH {{baseUrl}}/room-categories/1
-{{auth}}
-{{json}}
-
-{
-  "monthly_rent": 600,
-  "category_name": "Comfort"
-}
-
-###
-# Delete room category
-DELETE {{baseUrl}}/room-categories/2
-{{auth}}
-
-###
-# =========================
 # ROOM RESERVATIONS
 # =========================
 
@@ -255,6 +256,51 @@ PATCH {{baseUrl}}/room-reservations/13
 DELETE {{baseUrl}}/room-reservations/12
 {{auth}}
 
+
+###
+# =========================
+# ROOM PAYMENTS
+# =========================
+
+###
+# Get all room payments
+GET {{baseUrl}}/room-payments
+{{auth}}
+
+###
+# Get one room payment
+GET {{baseUrl}}/room-payments/1
+{{auth}}
+
+###
+# Create room payment
+POST {{baseUrl}}/room-payments
+{{auth}}
+{{json}}
+
+{
+  "id_reservation": 2,
+  "amount": 500.00,
+  "payment_due_date": "2026-05-15",
+  "amount_payed": 0.00
+}
+
+###
+# Update room payment
+PATCH {{baseUrl}}/room-payments/1
+{{auth}}
+{{json}}
+
+{
+  "amount_payed": 500.00
+}
+
+###
+# Delete room payment
+DELETE {{baseUrl}}/room-payments/1
+{{auth}}
+
+
 ###
 # =========================
 # EQUIPMENT
@@ -297,6 +343,53 @@ PATCH {{baseUrl}}/equipment/1
 ###
 # Delete equipment
 DELETE {{baseUrl}}/equipment/1
+{{auth}}
+
+###
+# =========================
+# ROOM EQUIPMENT
+# =========================
+
+###
+# Get all room-equipment assignments
+GET {{baseUrl}}/room-equipment
+{{auth}}
+
+###
+# Get equipment assigned to one room
+GET {{baseUrl}}/room-equipment/room/2
+{{auth}}
+
+###
+# Get rooms using equipment type
+GET {{baseUrl}}/room-equipment/equipment/2
+{{auth}}
+
+###
+# Assign equipment units to room
+POST {{baseUrl}}/room-equipment
+{{auth}}
+{{json}}
+
+{
+  "id_room": 1,
+  "id_equipment": 2,
+  "count": 1
+}
+
+###
+# Update room-equipment assignment count
+PATCH {{baseUrl}}/room-equipment/room/1/equipment/2
+{{auth}}
+{{json}}
+
+{
+  "count": 2
+}
+
+###
+# Remove one equipment unit from room
+DELETE {{baseUrl}}/room-equipment/room/1/equipment/2
 {{auth}}
 
 ###
@@ -391,96 +484,6 @@ DELETE {{baseUrl}}/parking-reservations/1
 
 ###
 # =========================
-# ROOM EQUIPMENT
-# =========================
-
-###
-# Get all room-equipment assignments
-GET {{baseUrl}}/room-equipment
-{{auth}}
-
-###
-# Get equipment assigned to one room
-GET {{baseUrl}}/room-equipment/room/2
-{{auth}}
-
-###
-# Get rooms using equipment type
-GET {{baseUrl}}/room-equipment/equipment/2
-{{auth}}
-
-###
-# Assign equipment units to room
-POST {{baseUrl}}/room-equipment
-{{auth}}
-{{json}}
-
-{
-  "id_room": 1,
-  "id_equipment": 2,
-  "count": 1
-}
-
-###
-# Update room-equipment assignment count
-PATCH {{baseUrl}}/room-equipment/room/1/equipment/2
-{{auth}}
-{{json}}
-
-{
-  "count": 2
-}
-
-###
-# Remove one equipment unit from room
-DELETE {{baseUrl}}/room-equipment/room/1/equipment/2
-{{auth}}
-
-###
-# =========================
-# ROOM PAYMENTS
-# =========================
-
-###
-# Get all room payments
-GET {{baseUrl}}/room-payments
-{{auth}}
-
-###
-# Get one room payment
-GET {{baseUrl}}/room-payments/1
-{{auth}}
-
-###
-# Create room payment
-POST {{baseUrl}}/room-payments
-{{auth}}
-{{json}}
-
-{
-  "id_reservation": 2,
-  "amount": 500.00,
-  "payment_due_date": "2026-05-15",
-  "amount_payed": 0.00
-}
-
-###
-# Update room payment
-PATCH {{baseUrl}}/room-payments/1
-{{auth}}
-{{json}}
-
-{
-  "amount_payed": 500.00
-}
-
-###
-# Delete room payment
-DELETE {{baseUrl}}/room-payments/1
-{{auth}}
-
-###
-# =========================
 # PARKING PAYMENTS
 # =========================
 
@@ -523,4 +526,5 @@ DELETE {{baseUrl}}/parking-payments/1
 {{auth}}
 
 # NOTES
+# 
 # Unique room numbers - add to DB.
