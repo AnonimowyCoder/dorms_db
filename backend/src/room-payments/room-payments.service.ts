@@ -1,7 +1,7 @@
 import {DatabaseService} from "@/database/database.service";
 import {RoomReservationsService} from "@/room-reservations/room-reservations.service";
-import {ensurePaymentIsValid} from "@/utility/validate-payment";
-import {Injectable, NotFoundException} from "@nestjs/common";
+import {ensurePaymentValueIsValid} from "@/utility/validate-payment";
+import {ConflictException, Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateRoomPaymentDto} from "./dto/create-room-payment.dto";
 import {UpdateRoomPaymentDto} from "./dto/update-room-payment.dto";
@@ -48,8 +48,9 @@ import {RoomPayment} from "./types";
 
 	public async create( dto: CreateRoomPaymentDto ): Promise< RoomPayment >
 	{
-		ensurePaymentIsValid( dto.amount, dto.amount_payed );
+		ensurePaymentValueIsValid( dto.amount, dto.amount_payed );
 		await this.roomReservationsService.ensureExists( dto.id_reservation );
+		await this.ensureReservationDoesNotAlreadyHavePayment( dto.id_reservation );
 
 		const createdPayment = await this.databaseService.queryOne< RoomPayment >(
 		    `INSERT INTO room_payments (
@@ -87,7 +88,7 @@ import {RoomPayment} from "./types";
 		const nextDueDate     = dto.payment_due_date ?? existingPayment.payment_due_date;
 		const nextAmountPayed = dto.amount_payed ?? Number( existingPayment.amount_payed );
 
-		ensurePaymentIsValid( nextAmount, nextAmountPayed );
+		ensurePaymentValueIsValid( nextAmount, nextAmountPayed );
 
 		const updatedPayment = await this.databaseService.queryOne< RoomPayment >(
 		    `UPDATE room_payments
@@ -123,6 +124,25 @@ import {RoomPayment} from "./types";
 		if ( ( result.rowCount ?? 0 ) === 0 )
 		{
 			throw new NotFoundException( `Room payment with id ${id} not found` );
+		}
+	}
+
+	private async ensureReservationDoesNotAlreadyHavePayment(
+	    idReservation: number,
+	    ): Promise< void >
+	{
+		const existingPayment = await this.databaseService.queryOne< { id : number } >(
+		    `SELECT id
+		 FROM room_payments
+		 WHERE id_reservation = $1`,
+		    [ idReservation ],
+		);
+
+		if ( existingPayment )
+		{
+			throw new ConflictException(
+			    `Reservation ${idReservation} already has a payment record`,
+			);
 		}
 	}
 }

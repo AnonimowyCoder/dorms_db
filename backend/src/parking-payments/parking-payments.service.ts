@@ -1,7 +1,7 @@
 import {DatabaseService} from "@/database/database.service";
 import {ParkingReservationsService} from "@/parking-reservations/parking-reservations.service";
-import {ensurePaymentIsValid} from "@/utility/validate-payment";
-import {Injectable, NotFoundException} from "@nestjs/common";
+import {ensurePaymentValueIsValid} from "@/utility/validate-payment";
+import {ConflictException, Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateParkingPaymentDto} from "./dto/create-parking-payment.dto";
 import {UpdateParkingPaymentDto} from "./dto/update-parking-payment.dto";
@@ -48,10 +48,9 @@ import {ParkingPayment} from "./types";
 
 	public async create( dto: CreateParkingPaymentDto ): Promise< ParkingPayment >
 	{
-		ensurePaymentIsValid( dto.amount, dto.amount_payed );
-		await this.parkingReservationsService.ensureExists(
-		    dto.id_parking_reservation,
-		);
+		ensurePaymentValueIsValid( dto.amount, dto.amount_payed );
+		await this.parkingReservationsService.ensureExists( dto.id_parking_reservation );
+		await this.ensureReservationDoesNotAlreadyHavePayment( dto.id_parking_reservation );
 
 		const createdPayment = await this.databaseService.queryOne< ParkingPayment >(
 		    `INSERT INTO parking_payments (
@@ -89,7 +88,7 @@ import {ParkingPayment} from "./types";
 		const nextDueDate     = dto.payment_due_date ?? existingPayment.payment_due_date;
 		const nextAmountPayed = dto.amount_payed ?? Number( existingPayment.amount_payed );
 
-		ensurePaymentIsValid( nextAmount, nextAmountPayed );
+		ensurePaymentValueIsValid( nextAmount, nextAmountPayed );
 
 		const updatedPayment = await this.databaseService.queryOne< ParkingPayment >(
 		    `UPDATE parking_payments
@@ -125,6 +124,25 @@ import {ParkingPayment} from "./types";
 		if ( ( result.rowCount ?? 0 ) === 0 )
 		{
 			throw new NotFoundException( `Parking payment with id ${id} not found` );
+		}
+	}
+
+	private async ensureReservationDoesNotAlreadyHavePayment(
+	    idReservation: number,
+	    ): Promise< void >
+	{
+		const existingPayment = await this.databaseService.queryOne< { id : number } >(
+		    `SELECT id
+		 FROM parking_payments
+		 WHERE id_parking_reservation = $1`,
+		    [ idReservation ],
+		);
+
+		if ( existingPayment )
+		{
+			throw new ConflictException(
+			    `Reservation ${idReservation} already has a payment record`,
+			);
 		}
 	}
 }

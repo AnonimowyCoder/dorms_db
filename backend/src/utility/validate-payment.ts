@@ -1,6 +1,6 @@
 import {BadRequestException} from "@nestjs/common";
 
-export function ensurePaymentIsValid(
+export function ensurePaymentValueIsValid(
     amount: number,
     amountPayed: number,
     ): void
