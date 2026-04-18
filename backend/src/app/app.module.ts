@@ -4,10 +4,12 @@ import {RolesGuard} from "@/auth/guards/roles.guard";
 import {DatabaseModule} from "@/database/database.module";
 import {EquipmentModule} from "@/equipment/equipment.module";
 import {ParkingLotsModule} from "@/parking-lots/parking-lots.module";
+import {ParkingPaymentsModule} from "@/parking-payments/parking-payments.module";
 import {ParkingReservationsModule} from "@/parking-reservations/parking-reservations.module";
 import {ResidentsModule} from "@/residents/residents.module";
 import {RoomCategoriesModule} from "@/room-categories/room-categories.module";
 import {RoomEquipmentModule} from "@/room-equipment/room-equipment.module";
+import {RoomPaymentsModule} from "@/room-payments/room-payments.module";
 import {RoomReservationsModule} from "@/room-reservations/room-reservations.module";
 import {RoomsModule} from "@/rooms/rooms.module";
 import {UsersModule} from "@/users/users.module";
@@ -23,10 +25,12 @@ import {AppService} from "./app.service";
 		DatabaseModule,
 		EquipmentModule,
 		ParkingLotsModule,
+		ParkingPaymentsModule,
 		ParkingReservationsModule,
 		ResidentsModule,
 		RoomCategoriesModule,
 		RoomEquipmentModule,
+		RoomPaymentsModule,
 		RoomReservationsModule,
 		RoomsModule,
 		UsersModule,

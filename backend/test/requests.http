@@ -102,7 +102,9 @@ PATCH {{baseUrl}}/residents/1
 {{json}}
 
 {
-  "department": "science"
+  "first_name": "Krzysztof",
+  "last_name": "Banaś",
+  "department": "The Department of Physical and Mental Anguish"
 }
 
 ###
@@ -139,10 +141,10 @@ POST {{baseUrl}}/rooms
 {{json}}
 
 {
-  "room_number": 122,
+  "room_number": 222,
   "floor_number": 1,
   "num_of_beds": 2,
-  "id_category": 1
+  "id_category": 2
 }
 
 ###
@@ -191,7 +193,7 @@ POST {{baseUrl}}/room-categories
 
 ###
 # Update room category
-PATCH {{baseUrl}}/room-categories/2
+PATCH {{baseUrl}}/room-categories/1
 {{auth}}
 {{json}}
 
@@ -232,9 +234,9 @@ POST {{baseUrl}}/room-reservations
 {{json}}
 
 {
-  "start_date_reserv": "2026-10-21",
-  "end_date_reserv": "2026-10-25",
-  "id_room": 1,
+  "start_date_reserv": "2026-05-01",
+  "end_date_reserv": "2026-05-30",
+  "id_room": 2,
   "id_resident": 2
 }
 
@@ -432,6 +434,92 @@ PATCH {{baseUrl}}/room-equipment/room/1/equipment/2
 ###
 # Remove one equipment unit from room
 DELETE {{baseUrl}}/room-equipment/room/1/equipment/2
+{{auth}}
+
+###
+# =========================
+# ROOM PAYMENTS
+# =========================
+
+###
+# Get all room payments
+GET {{baseUrl}}/room-payments
+{{auth}}
+
+###
+# Get one room payment
+GET {{baseUrl}}/room-payments/1
+{{auth}}
+
+###
+# Create room payment
+POST {{baseUrl}}/room-payments
+{{auth}}
+{{json}}
+
+{
+  "id_reservation": 2,
+  "amount": 500.00,
+  "payment_due_date": "2026-05-15",
+  "amount_payed": 0.00
+}
+
+###
+# Update room payment
+PATCH {{baseUrl}}/room-payments/1
+{{auth}}
+{{json}}
+
+{
+  "amount_payed": 500.00
+}
+
+###
+# Delete room payment
+DELETE {{baseUrl}}/room-payments/1
+{{auth}}
+
+###
+# =========================
+# PARKING PAYMENTS
+# =========================
+
+###
+# Get all parking payments
+GET {{baseUrl}}/parking-payments
+{{auth}}
+
+###
+# Get one parking payment
+GET {{baseUrl}}/parking-payments/1
+{{auth}}
+
+###
+# Create parking payment
+POST {{baseUrl}}/parking-payments
+{{auth}}
+{{json}}
+
+{
+  "id_parking_reservation": 1,
+  "amount": 150.00,
+  "payment_due_date": "2026-05-15",
+  "amount_payed": 20.00
+}
+
+###
+# Update parking payment
+PATCH {{baseUrl}}/parking-payments/1
+{{auth}}
+{{json}}
+
+{
+  "amount_payed": 75.00
+}
+
+###
+# Delete parking payment
+DELETE {{baseUrl}}/parking-payments/1
 {{auth}}
 
 # NOTES
