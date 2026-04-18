@@ -1,10 +1,7 @@
 import {DatabaseService} from "@/database/database.service";
 import {ParkingReservationsService} from "@/parking-reservations/parking-reservations.service";
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-} from "@nestjs/common";
+import {ensurePaymentIsValid} from "@/utility/validate-payment";
+import {Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateParkingPaymentDto} from "./dto/create-parking-payment.dto";
 import {UpdateParkingPaymentDto} from "./dto/update-parking-payment.dto";
@@ -51,7 +48,7 @@ import {ParkingPayment} from "./types";
 
 	public async create( dto: CreateParkingPaymentDto ): Promise< ParkingPayment >
 	{
-		this.ensurePaymentIsValid( dto.amount, dto.amount_payed );
+		ensurePaymentIsValid( dto.amount, dto.amount_payed );
 		await this.parkingReservationsService.ensureExists(
 		    dto.id_parking_reservation,
 		);
@@ -92,7 +89,7 @@ import {ParkingPayment} from "./types";
 		const nextDueDate     = dto.payment_due_date ?? existingPayment.payment_due_date;
 		const nextAmountPayed = dto.amount_payed ?? Number( existingPayment.amount_payed );
 
-		this.ensurePaymentIsValid( nextAmount, nextAmountPayed );
+		ensurePaymentIsValid( nextAmount, nextAmountPayed );
 
 		const updatedPayment = await this.databaseService.queryOne< ParkingPayment >(
 		    `UPDATE parking_payments
@@ -128,29 +125,6 @@ import {ParkingPayment} from "./types";
 		if ( ( result.rowCount ?? 0 ) === 0 )
 		{
 			throw new NotFoundException( `Parking payment with id ${id} not found` );
-		}
-	}
-
-	private ensurePaymentIsValid(
-	    amount: number,
-	    amountPayed: number,
-	    ): void
-	{
-		if ( amount < 0 )
-		{
-			throw new BadRequestException( "amount cannot be negative" );
-		}
-
-		if ( amountPayed < 0 )
-		{
-			throw new BadRequestException( "amount_payed cannot be negative" );
-		}
-
-		if ( amountPayed > amount )
-		{
-			throw new BadRequestException(
-			    "amount_payed cannot be greater than amount",
-			);
 		}
 	}
 }

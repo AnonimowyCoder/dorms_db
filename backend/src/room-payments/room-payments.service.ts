@@ -1,6 +1,7 @@
 import {DatabaseService} from "@/database/database.service";
 import {RoomReservationsService} from "@/room-reservations/room-reservations.service";
-import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
+import {ensurePaymentIsValid} from "@/utility/validate-payment";
+import {Injectable, NotFoundException} from "@nestjs/common";
 
 import {CreateRoomPaymentDto} from "./dto/create-room-payment.dto";
 import {UpdateRoomPaymentDto} from "./dto/update-room-payment.dto";
@@ -47,7 +48,7 @@ import {RoomPayment} from "./types";
 
 	public async create( dto: CreateRoomPaymentDto ): Promise< RoomPayment >
 	{
-		this.ensurePaymentIsValid( dto.amount, dto.amount_payed );
+		ensurePaymentIsValid( dto.amount, dto.amount_payed );
 		await this.roomReservationsService.ensureExists( dto.id_reservation );
 
 		const createdPayment = await this.databaseService.queryOne< RoomPayment >(
@@ -86,7 +87,7 @@ import {RoomPayment} from "./types";
 		const nextDueDate     = dto.payment_due_date ?? existingPayment.payment_due_date;
 		const nextAmountPayed = dto.amount_payed ?? Number( existingPayment.amount_payed );
 
-		this.ensurePaymentIsValid( nextAmount, nextAmountPayed );
+		ensurePaymentIsValid( nextAmount, nextAmountPayed );
 
 		const updatedPayment = await this.databaseService.queryOne< RoomPayment >(
 		    `UPDATE room_payments
@@ -122,29 +123,6 @@ import {RoomPayment} from "./types";
 		if ( ( result.rowCount ?? 0 ) === 0 )
 		{
 			throw new NotFoundException( `Room payment with id ${id} not found` );
-		}
-	}
-
-	private ensurePaymentIsValid(
-	    amount: number,
-	    amountPayed: number,
-	    ): void
-	{
-		if ( amount < 0 )
-		{
-			throw new BadRequestException( "amount cannot be negative" );
-		}
-
-		if ( amountPayed < 0 )
-		{
-			throw new BadRequestException( "amount_payed cannot be negative" );
-		}
-
-		if ( amountPayed > amount )
-		{
-			throw new BadRequestException(
-			    "amount_payed cannot be greater than amount",
-			);
 		}
 	}
 }
