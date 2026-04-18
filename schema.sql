@@ -201,7 +201,8 @@ ALTER TABLE public.room_categories ALTER COLUMN id ADD GENERATED ALWAYS AS IDENT
 
 CREATE TABLE public.room_equipment (
     id_room integer NOT NULL,
-    id_equipment integer NOT NULL
+    id_equipment integer NOT NULL,
+    count integer NOT NULL CHECK (count > 0)
 );
 
 
