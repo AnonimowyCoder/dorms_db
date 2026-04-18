@@ -90,13 +90,8 @@ CREATE TABLE public.parking_payments (
     id_parking_reservation integer NOT NULL,
     amount numeric(12, 2) NOT NULL,
     payment_due_date date NOT NULL,
-    amount_payed numeric(12, 2) NOT NULL DEFAULT 0.00,
-    
-    CONSTRAINT fk_parking_reservation 
-        FOREIGN KEY (id_parking_reservation) 
-        REFERENCES public.parking_reservations(id)
+    amount_payed numeric(12, 2) NOT NULL DEFAULT 0.00
 );
-
 
 --
 -- TOC entry 225 (class 1259 OID 32792)
@@ -200,16 +195,12 @@ CREATE TABLE public.room_equipment (
 -- Name: room_payments; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.parking_payments (
+CREATE TABLE public.room_payments (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_parking_reservation integer NOT NULL,
+    id_reservation integer NOT NULL,
     amount numeric(12, 2) NOT NULL,
     payment_due_date date NOT NULL,
-    amount_payed numeric(12, 2) NOT NULL DEFAULT 0.00,
-    
-    CONSTRAINT fk_parking_reservation 
-        FOREIGN KEY (id_parking_reservation) 
-        REFERENCES public.parking_reservations(id)
+    amount_payed numeric(12, 2) NOT NULL DEFAULT 0.00
 );
 
 -- TOC entry 234 (class 1259 OID 32826)
@@ -462,6 +453,15 @@ ALTER TABLE ONLY public.room_reservations
     ADD CONSTRAINT fk_rooms FOREIGN KEY (id_room) REFERENCES public.rooms(id);
 
 
+ALTER TABLE ONLY public.room_payments
+    ADD CONSTRAINT fk_room_reservations 
+    FOREIGN KEY (id_reservation) REFERENCES public.room_reservations(id);
+
+
+ALTER TABLE ONLY public.parking_payments
+    ADD CONSTRAINT fk_parking_reservation 
+    FOREIGN KEY (id_parking_reservation) REFERENCES public.parking_reservations(id);
+    
 -- Completed on 2026-04-13 15:12:13
 
 --
