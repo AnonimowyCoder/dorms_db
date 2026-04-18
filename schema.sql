@@ -461,6 +461,12 @@ ALTER TABLE ONLY public.room_payments
 ALTER TABLE ONLY public.parking_payments
     ADD CONSTRAINT fk_parking_reservation 
     FOREIGN KEY (id_parking_reservation) REFERENCES public.parking_reservations(id);
+
+ALTER TABLE public.room_payments
+ADD CONSTRAINT room_payments_id_reservation_key UNIQUE (id_reservation);
+
+ALTER TABLE public.parking_payments
+ADD CONSTRAINT parking_payments_id_parking_reservation_key UNIQUE (id_parking_reservation);
     
 -- Completed on 2026-04-13 15:12:13
 
