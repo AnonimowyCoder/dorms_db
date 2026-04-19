@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:3001
+@json = Content-Type: application/json
+
+# Run the login request from auth.http first (or copy the login block here)
+@auth = Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# Get all users
+GET {{baseUrl}}/users
+{{auth}}

@@ -1,0 +1,534 @@
+@baseUrl = http://localhost:3001
+@json = Content-Type: application/json
+@auth = Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
+# Welcome
+GET {{baseUrl}}
+
+###
+# Health
+GET {{baseUrl}}/health
+
+###
+# Database health
+GET {{baseUrl}}/health/db
+
+###
+# @name login
+POST {{baseUrl}}/auth/login
+{{json}}
+
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+
+###
+
+###
+# Get current authenticated user
+GET {{baseUrl}}/auth/me
+{{auth}}
+
+###
+# =========================
+# USERS
+# Admin only
+# =========================
+
+###
+# Get all users
+GET {{baseUrl}}/users
+{{auth}}
+
+###
+# Get one user
+GET {{baseUrl}}/users/3
+{{auth}}
+
+###
+# Create user
+POST {{baseUrl}}/users
+{{auth}}
+{{json}}
+
+{
+  "email": "manager1@example.com",
+  "password": "password123",
+  "role": "manager"
+}
+
+###
+# Update user
+PATCH {{baseUrl}}/users/3
+{{auth}}
+{{json}}
+
+{
+  "email": "manager1@example.com",
+  "role": "manager"
+}
+
+###
+# Delete user
+DELETE {{baseUrl}}/users/1
+{{auth}}
+
+###
+# =========================
+# RESIDENTS
+# Admin or Manager
+# =========================
+
+###
+# Get all residents
+GET {{baseUrl}}/residents
+{{auth}}
+
+###
+# Get one resident
+GET {{baseUrl}}/residents/1
+{{auth}}
+
+###
+# Create resident
+POST {{baseUrl}}/residents
+{{auth}}
+{{json}}
+
+{
+  "first_name": "Rafał",
+  "last_name": "Zabłotni",
+  "department": "Music"
+}
+
+###
+# Update resident
+PATCH {{baseUrl}}/residents/1
+{{auth}}
+{{json}}
+
+{
+  "first_name": "Krzysztof",
+  "last_name": "Banaś",
+  "department": "The Department of Physical and Mental Anguish"
+}
+
+###
+# Delete resident
+DELETE {{baseUrl}}/residents/1
+{{auth}}
+
+
+###
+# =========================
+# ROOM CATEGORIES
+# Read: admin or manager
+# Write: admin only
+# =========================
+
+###
+# Get all room categories
+GET {{baseUrl}}/room-categories
+{{auth}}
+
+###
+# Get one room category
+GET {{baseUrl}}/room-categories/1
+{{auth}}
+
+###
+# Create room category
+POST {{baseUrl}}/room-categories
+{{auth}}
+{{json}}
+
+{
+  "monthly_rent": 500,
+  "if_kitchen": true,
+  "category_name": "Standard"
+}
+
+###
+# Update room category
+PATCH {{baseUrl}}/room-categories/1
+{{auth}}
+{{json}}
+
+{
+  "monthly_rent": 600,
+  "category_name": "Comfort"
+}
+
+###
+# Delete room category
+DELETE {{baseUrl}}/room-categories/2
+{{auth}}
+
+###
+# =========================
+# ROOMS
+# Admin or Manager
+# =========================
+
+###
+# Get all rooms
+GET {{baseUrl}}/rooms
+{{auth}}
+
+###
+# Get available rooms
+# NOTE: With dates use /rooms-reservations/available
+GET {{baseUrl}}/rooms/available
+{{auth}}
+
+###
+# Get one room
+GET {{baseUrl}}/rooms/2
+{{auth}}
+
+###
+# Create room
+POST {{baseUrl}}/rooms
+{{auth}}
+{{json}}
+
+{
+  "room_number": 222,
+  "floor_number": 1,
+  "num_of_beds": 2,
+  "id_category": 2
+}
+
+###
+# Update room
+PATCH {{baseUrl}}/rooms/2
+{{auth}}
+{{json}}
+
+{
+  "room_number": 201
+}
+
+###
+# Delete room
+DELETE {{baseUrl}}/rooms/2
+{{auth}}
+
+###
+# =========================
+# ROOM RESERVATIONS
+# =========================
+
+###
+# Get all reservations
+GET {{baseUrl}}/room-reservations
+{{auth}}
+
+###
+# Get one reservation
+GET {{baseUrl}}/room-reservations/1
+{{auth}}
+
+###
+# Get all available reservations in given date
+GET {{baseUrl}}/room-reservations/available?start_date=2026-10-21&end_date=2026-10-25
+{{auth}}
+
+###
+# Create reservation
+POST {{baseUrl}}/room-reservations
+{{auth}}
+{{json}}
+
+{
+  "start_date_reserv": "2026-05-01",
+  "end_date_reserv": "2026-05-30",
+  "id_room": 2,
+  "id_resident": 2
+}
+
+###
+# Update reservation
+PATCH {{baseUrl}}/room-reservations/13
+{{auth}}
+{{json}}
+
+{
+  "end_date_reserv": "2026-05-15"
+}
+
+###
+# Delete reservation
+DELETE {{baseUrl}}/room-reservations/12
+{{auth}}
+
+
+###
+# =========================
+# ROOM PAYMENTS
+# =========================
+
+###
+# Get all room payments
+GET {{baseUrl}}/room-payments
+{{auth}}
+
+###
+# Get one room payment
+GET {{baseUrl}}/room-payments/1
+{{auth}}
+
+###
+# Create room payment
+POST {{baseUrl}}/room-payments
+{{auth}}
+{{json}}
+
+{
+  "id_reservation": 2,
+  "amount": 500.00,
+  "payment_due_date": "2026-05-15",
+  "amount_payed": 0.00
+}
+
+###
+# Update room payment
+PATCH {{baseUrl}}/room-payments/1
+{{auth}}
+{{json}}
+
+{
+  "amount_payed": 500.00
+}
+
+###
+# Delete room payment
+DELETE {{baseUrl}}/room-payments/1
+{{auth}}
+
+
+###
+# =========================
+# EQUIPMENT
+# =========================
+
+###
+# Get all equipment
+GET {{baseUrl}}/equipment
+{{auth}}
+
+###
+# Get one equipment item
+GET {{baseUrl}}/equipment/1
+{{auth}}
+
+###
+# Create equipment
+POST {{baseUrl}}/equipment
+{{auth}}
+{{json}}
+
+{
+  "equipment_name": "Legless Chair",
+  "description": "Chair with broken legs",
+  "count": 3
+}
+
+###
+# Update equipment
+PATCH {{baseUrl}}/equipment/1
+{{auth}}
+{{json}}
+
+{
+  "equipment_name": "Desk Lamp",
+  "description": "LED bedside lamp",
+  "count": 1
+}
+
+###
+# Delete equipment
+DELETE {{baseUrl}}/equipment/1
+{{auth}}
+
+###
+# =========================
+# ROOM EQUIPMENT
+# =========================
+
+###
+# Get all room-equipment assignments
+GET {{baseUrl}}/room-equipment
+{{auth}}
+
+###
+# Get equipment assigned to one room
+GET {{baseUrl}}/room-equipment/room/2
+{{auth}}
+
+###
+# Get rooms using equipment type
+GET {{baseUrl}}/room-equipment/equipment/2
+{{auth}}
+
+###
+# Assign equipment units to room
+POST {{baseUrl}}/room-equipment
+{{auth}}
+{{json}}
+
+{
+  "id_room": 1,
+  "id_equipment": 2,
+  "count": 1
+}
+
+###
+# Update room-equipment assignment count
+PATCH {{baseUrl}}/room-equipment/room/1/equipment/2
+{{auth}}
+{{json}}
+
+{
+  "count": 2
+}
+
+###
+# Remove one equipment unit from room
+DELETE {{baseUrl}}/room-equipment/room/1/equipment/2
+{{auth}}
+
+###
+# =========================
+# PARKING LOTS
+# =========================
+
+###
+# Get all parking lots
+GET {{baseUrl}}/parking-lots
+{{auth}}
+
+###
+# Get one parking lot
+GET {{baseUrl}}/parking-lots/1
+{{auth}}
+
+###
+# Create parking lot
+POST {{baseUrl}}/parking-lots
+{{auth}}
+{{json}}
+
+{
+  "parking_lot_type": "covered",
+  "placement": "Building A - underground"
+}
+
+###
+# Update parking lot
+PATCH {{baseUrl}}/parking-lots/1
+{{auth}}
+{{json}}
+
+{
+  "placement": "Building B - north side"
+}
+
+###
+# Delete parking lot
+DELETE {{baseUrl}}/parking-lots/2
+{{auth}}
+
+###
+# =========================
+# PARKING RESERVATIONS
+# =========================
+
+###
+# Get all parking reservations
+GET {{baseUrl}}/parking-reservations
+{{auth}}
+
+###
+# Get all parking reservations
+GET {{baseUrl}}/parking-reservations/available?start_date=2026-07-22&end_date=2026-07-25
+{{auth}}
+
+###
+# Get one parking reservation
+GET {{baseUrl}}/parking-reservations/1
+{{auth}}
+
+###
+# Create parking reservation
+POST {{baseUrl}}/parking-reservations
+{{auth}}
+{{json}}
+
+{
+  "start_date_reserv": "2026-06-20",
+  "end_date_reserv": "2026-06-21",
+  "id_parking_lot": 1,
+  "id_resident": 1
+}
+
+###
+# Update parking reservation
+PATCH {{baseUrl}}/parking-reservations/2
+{{auth}}
+{{json}}
+
+{
+  "start_date_reserv": "2026-05-10",
+  "end_date_reserv": "2026-05-12"
+}
+
+###
+# Delete parking reservation
+DELETE {{baseUrl}}/parking-reservations/1
+{{auth}}
+
+###
+# =========================
+# PARKING PAYMENTS
+# =========================
+
+###
+# Get all parking payments
+GET {{baseUrl}}/parking-payments
+{{auth}}
+
+###
+# Get one parking payment
+GET {{baseUrl}}/parking-payments/1
+{{auth}}
+
+###
+# Create parking payment
+POST {{baseUrl}}/parking-payments
+{{auth}}
+{{json}}
+
+{
+  "id_parking_reservation": 1,
+  "amount": 150.00,
+  "payment_due_date": "2026-05-15",
+  "amount_payed": 20.00
+}
+
+###
+# Update parking payment
+PATCH {{baseUrl}}/parking-payments/1
+{{auth}}
+{{json}}
+
+{
+  "amount_payed": 75.00
+}
+
+###
+# Delete parking payment
+DELETE {{baseUrl}}/parking-payments/1
+{{auth}}

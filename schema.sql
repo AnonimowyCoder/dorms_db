@@ -86,28 +86,12 @@ ALTER TABLE public.parking_lots ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY
 --
 
 CREATE TABLE public.parking_payments (
-    id integer NOT NULL,
-    amount real NOT NULL,
-    payment_due_date date NOT NULL,
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_parking_reservation integer NOT NULL,
-    amount_payed real NOT NULL
+    amount numeric(12, 2) NOT NULL,
+    payment_due_date date NOT NULL,
+    amount_payed numeric(12, 2) NOT NULL DEFAULT 0.00
 );
-
-
---
--- TOC entry 224 (class 1259 OID 32791)
--- Name: parking_payments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.parking_payments ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.parking_payments_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
 
 --
 -- TOC entry 225 (class 1259 OID 32792)
@@ -212,30 +196,13 @@ CREATE TABLE public.room_equipment (
 --
 
 CREATE TABLE public.room_payments (
-    id integer NOT NULL,
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_reservation integer NOT NULL,
-    amount real NOT NULL,
+    amount numeric(12, 2) NOT NULL,
     payment_due_date date NOT NULL,
-    amount_payed real NOT NULL
+    amount_payed numeric(12, 2) NOT NULL DEFAULT 0.00
 );
 
-
---
--- TOC entry 233 (class 1259 OID 32825)
--- Name: room_payments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.room_payments ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.room_payments_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
 -- TOC entry 234 (class 1259 OID 32826)
 -- Name: room_reservations; Type: TABLE; Schema: public; Owner: -
 --
@@ -263,7 +230,6 @@ ALTER TABLE public.room_reservations ALTER COLUMN id ADD GENERATED ALWAYS AS IDE
     CACHE 1
 );
 
-
 --
 -- TOC entry 236 (class 1259 OID 32834)
 -- Name: rooms; Type: TABLE; Schema: public; Owner: -
@@ -271,12 +237,11 @@ ALTER TABLE public.room_reservations ALTER COLUMN id ADD GENERATED ALWAYS AS IDE
 
 CREATE TABLE public.rooms (
     id integer NOT NULL,
-    room_number integer NOT NULL,
+    room_number integer NOT NULL UNIQUE,
     floor_number integer NOT NULL,
     num_of_beds integer NOT NULL,
     id_category integer NOT NULL
 );
-
 
 --
 -- TOC entry 237 (class 1259 OID 32842)
@@ -354,16 +319,6 @@ ALTER TABLE ONLY public.equipment
 ALTER TABLE ONLY public.parking_lots
     ADD CONSTRAINT parking_lots_pkey PRIMARY KEY (id);
 
-
---
--- TOC entry 4864 (class 2606 OID 32859)
--- Name: parking_payments parking_payments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.parking_payments
-    ADD CONSTRAINT parking_payments_pkey PRIMARY KEY (id);
-
-
 --
 -- TOC entry 4866 (class 2606 OID 32861)
 -- Name: parking_reservations parking_reservations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -398,16 +353,6 @@ ALTER TABLE ONLY public.room_categories
 
 ALTER TABLE ONLY public.room_equipment
     ADD CONSTRAINT room_equipment_pkey PRIMARY KEY (id_room, id_equipment);
-
-
---
--- TOC entry 4874 (class 2606 OID 32869)
--- Name: room_payments room_payments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.room_payments
-    ADD CONSTRAINT room_payments_pkey PRIMARY KEY (id);
-
 
 --
 -- TOC entry 4876 (class 2606 OID 32871)
@@ -471,16 +416,6 @@ ALTER TABLE ONLY public.room_equipment
 ALTER TABLE ONLY public.parking_reservations
     ADD CONSTRAINT fk_parking_lot FOREIGN KEY (id_parking_lot) REFERENCES public.parking_lots(id);
 
-
---
--- TOC entry 4883 (class 2606 OID 32893)
--- Name: parking_payments fk_parking_reservation; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.parking_payments
-    ADD CONSTRAINT fk_parking_reservation FOREIGN KEY (id_parking_reservation) REFERENCES public.parking_reservations(id);
-
-
 --
 -- TOC entry 4889 (class 2606 OID 32898)
 -- Name: room_reservations fk_resident; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -507,16 +442,6 @@ ALTER TABLE ONLY public.parking_reservations
 ALTER TABLE ONLY public.room_equipment
     ADD CONSTRAINT fk_room FOREIGN KEY (id_room) REFERENCES public.rooms(id);
 
-
---
--- TOC entry 4888 (class 2606 OID 32913)
--- Name: room_payments fk_room_reservations; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.room_payments
-    ADD CONSTRAINT fk_room_reservations FOREIGN KEY (id_reservation) REFERENCES public.room_reservations(id);
-
-
 --
 -- TOC entry 4890 (class 2606 OID 32918)
 -- Name: room_reservations fk_rooms; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -526,6 +451,21 @@ ALTER TABLE ONLY public.room_reservations
     ADD CONSTRAINT fk_rooms FOREIGN KEY (id_room) REFERENCES public.rooms(id);
 
 
+ALTER TABLE ONLY public.room_payments
+    ADD CONSTRAINT fk_room_reservations 
+    FOREIGN KEY (id_reservation) REFERENCES public.room_reservations(id);
+
+
+ALTER TABLE ONLY public.parking_payments
+    ADD CONSTRAINT fk_parking_reservation 
+    FOREIGN KEY (id_parking_reservation) REFERENCES public.parking_reservations(id);
+
+ALTER TABLE public.room_payments
+ADD CONSTRAINT room_payments_id_reservation_key UNIQUE (id_reservation);
+
+ALTER TABLE public.parking_payments
+ADD CONSTRAINT parking_payments_id_parking_reservation_key UNIQUE (id_parking_reservation);
+    
 -- Completed on 2026-04-13 15:12:13
 
 --
