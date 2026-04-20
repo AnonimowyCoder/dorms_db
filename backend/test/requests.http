@@ -532,3 +532,10 @@ PATCH {{baseUrl}}/parking-payments/1
 # Delete parking payment
 DELETE {{baseUrl}}/parking-payments/1
 {{auth}}
+
+
+# TODO
+# add payment trigger after reservation (for parking and room reservation)
+# ensure reservation before today can't be done
+# 
+# frontend: add information about why operation can't be done
