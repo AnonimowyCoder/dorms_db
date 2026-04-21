@@ -479,7 +479,7 @@ POST {{baseUrl}}/parking-reservations
 
 ###
 # Update parking reservation
-PATCH {{baseUrl}}/parking-reservations/2
+PATCH {{baseUrl}}/parking-reservations/1
 {{auth}}
 {{json}}
 
@@ -537,5 +537,4 @@ DELETE {{baseUrl}}/parking-payments/1
 {{auth}}
 
 # TODO
-# ensure reservation before today can't be done
 # frontend: add information about why operation can't be done
