@@ -12,7 +12,7 @@ import {ParkingLot} from "./types";
 	public async findAll(): Promise< ParkingLot[] >
 	{
 		return this.databaseService.queryMany< ParkingLot >(
-		    `SELECT id, parking_lot_type, placement
+		    `SELECT id, parking_lot_type, placement, daily_rate
 			 FROM parking_lots
 			 ORDER BY id ASC`,
 		);
@@ -21,7 +21,7 @@ import {ParkingLot} from "./types";
 	public async findOne( id: number ): Promise< ParkingLot >
 	{
 		const parkingLot = await this.databaseService.queryOne< ParkingLot >(
-		    `SELECT id, parking_lot_type, placement
+		    `SELECT id, parking_lot_type, placement, daily_rate
 			 FROM parking_lots
 			 WHERE id = $1`,
 		    [ id ],
@@ -43,12 +43,13 @@ import {ParkingLot} from "./types";
 	public async create( dto: CreateParkingLotDto ): Promise< ParkingLot >
 	{
 		const createdParkingLot = await this.databaseService.queryOne< ParkingLot >(
-		    `INSERT INTO parking_lots ( parking_lot_type, placement )
-			 VALUES ( $1, $2 )
-			 RETURNING id, parking_lot_type, placement`,
+		    `INSERT INTO parking_lots ( parking_lot_type, placement, daily_rate )
+			 VALUES ( $1, $2, $3 )
+			 RETURNING id, parking_lot_type, placement, daily_rate`,
 		    [
 			    dto.parking_lot_type ?? null,
 			    dto.placement ?? null,
+			    dto.daily_rate,
 		    ],
 		);
 
@@ -70,13 +71,15 @@ import {ParkingLot} from "./types";
 		const updatedParkingLot = await this.databaseService.queryOne< ParkingLot >(
 		    `UPDATE parking_lots
 			 SET parking_lot_type = $2,
-			     placement = $3
+			     placement = $3,
+				 daily_rate = $4
 			 WHERE id = $1
-			 RETURNING id, parking_lot_type, placement`,
+			 RETURNING id, parking_lot_type, placement, daily_rate`,
 		    [
 			    id,
 			    dto.parking_lot_type ?? existingParkingLot.parking_lot_type,
 			    dto.placement ?? existingParkingLot.placement,
+			    dto.daily_rate ?? existingParkingLot.daily_rate,
 		    ],
 		);
 
