@@ -208,28 +208,28 @@ async function handleEqSubmit(e) {
     if (desc) payload.description = desc;
 
     try {
+        let response;
         if (id) {
-            await fetchWithAuth(`/equipment/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+            response = await fetchWithAuth(`/equipment/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
         } else {
-            await fetchWithAuth('/equipment', { method: 'POST', body: JSON.stringify(payload) });
+            response = await fetchWithAuth('/equipment', { method: 'POST', body: JSON.stringify(payload) });
         }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to save equipment.';
+            if (errorData && errorData.message) {
+                errorMsg = Array.isArray(errorData.message) ? errorData.message.join('<br>') : errorData.message;
+            }
+            throw new Error(errorMsg);
+        }
+
         hideEqForm();
         await loadEquipment();
         if (selectedRoomId) await loadRoomEquipment(selectedRoomId); // Refresh room equipment names if needed
         msg.innerHTML = `<span style="color: green;">Equipment saved.</span>`;
     } catch (error) {
         msg.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
-    }
-}
-
-async function deleteEq(id) {
-    if (!confirm('Are you sure you want to delete this equipment? This might affect room assignments.')) return;
-    try {
-        await fetchWithAuth(`/equipment/${id}`, { method: 'DELETE' });
-        await loadEquipment();
-        if (selectedRoomId) await loadRoomEquipment(selectedRoomId);
-    } catch (error) {
-        document.getElementById('eq-message').innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
     }
 }
 
@@ -327,9 +327,13 @@ async function handleAssignSubmit(e) {
     try {
         const response = await fetchWithAuth('/room-equipment', { method: 'POST', body: JSON.stringify(payload) });
 
-        // Brakowalo tego sprawdzenia - wyrzuci blad do bloku catch jesli backend odmowi
         if (!response.ok) {
-            throw new Error('Assignment rejected by server.');
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Assignment rejected by server.';
+            if (errorData && errorData.message) {
+                errorMsg = Array.isArray(errorData.message) ? errorData.message.join('<br>') : errorData.message;
+            }
+            throw new Error(errorMsg);
         }
 
         hideAssignForm();
@@ -371,6 +375,42 @@ async function updateAssignSelect() {
     } catch (error) {
         console.error('Failed to load assignments for select', error);
         select.innerHTML = '<option value="">Error loading data</option>';
+    }
+}
+
+async function updateAssignCount(eqId) {
+    const msg = document.getElementById('room-eq-message');
+    const assignment = currentRoomEquipmentData.find(a => a.id_equipment === eqId);
+    if (!assignment || !selectedRoomId) return;
+
+    const newCountStr = prompt(`Enter new count for this equipment (Current: ${assignment.count}):`, assignment.count);
+    if (newCountStr === null) return;
+
+    const newCount = parseInt(newCountStr, 10);
+    if (isNaN(newCount) || newCount <= 0) {
+        alert("Invalid count. Must be a positive number.");
+        return;
+    }
+
+    try {
+        const response = await fetchWithAuth(`/room-equipment/room/${selectedRoomId}/equipment/${eqId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ count: newCount })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to update count.';
+            if (errorData && errorData.message) {
+                errorMsg = Array.isArray(errorData.message) ? errorData.message.join('<br>') : errorData.message;
+            }
+            throw new Error(errorMsg);
+        }
+
+        await loadRoomEquipment(selectedRoomId);
+        msg.innerHTML = `<span style="color: green;">Count updated.</span>`;
+    } catch (error) {
+        msg.innerHTML = `<span style="color: red;">Error updating count: ${error.message}</span>`;
     }
 }
 

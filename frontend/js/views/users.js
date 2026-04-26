@@ -163,6 +163,7 @@ async function handleFormSubmit(e) {
     submitBtn.disabled = true;
 
     try {
+        let response;
         if (isEditing) {
             // Update user (PATCH)
             const payload = { email, role };
@@ -172,25 +173,33 @@ async function handleFormSubmit(e) {
                 payload.password = password;
             }
 
-            const response = await fetchWithAuth(`/users/${id}`, {
+            response = await fetchWithAuth(`/users/${id}`, {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             });
-
-            if (!response.ok) throw new Error('Failed to update user');
-            messageDiv.innerHTML = `<span style="color: green;">User updated successfully.</span>`;
         } else {
             // Create user (POST)
             const payload = { email, password, role };
 
-            const response = await fetchWithAuth('/users', {
+            response = await fetchWithAuth('/users', {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
-
-            if (!response.ok) throw new Error('Failed to create user');
-            messageDiv.innerHTML = `<span style="color: green;">User created successfully.</span>`;
         }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to save user.';
+
+            if (errorData && errorData.message) {
+                errorMsg = Array.isArray(errorData.message)
+                    ? errorData.message.join('<br>')
+                    : errorData.message;
+            }
+            throw new Error(errorMsg);
+        }
+
+        messageDiv.innerHTML = `<span style="color: green;">User ${isEditing ? 'updated' : 'created'} successfully.</span>`;
 
         hideForm();
         await loadUsers(); // Refresh table

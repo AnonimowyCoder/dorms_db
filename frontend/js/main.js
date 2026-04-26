@@ -11,12 +11,14 @@ const contentArea = document.getElementById('content-area');
 
 // Configuration of available views
 const ROUTES = {
-    residents: { title: 'Residents', module: './views/residents.js', roles: ['admin', 'manager'] },
     users: { title: 'Users', module: './views/users.js', roles: ['admin'] },
-    rooms: { title: 'Rooms & Categories', module: './views/rooms.js', roles: ['admin', 'manager'] },
+    residents: { title: 'Residents', module: './views/residents.js', roles: ['admin', 'manager'] },
+    rooms: { title: 'Rooms & Categories', module: './views/rooms.js', roles: ['admin'] },
     roomReservations: { title: 'Room Reservations', module: './views/room-reservations.js', roles: ['admin', 'manager'] },
-    roomPayments: { title: 'Room Payments', module: './views/room-payments.js', roles: ['admin', 'manager'] }, // Nowa zakladka
+    roomPayments: { title: 'Room Payments', module: './views/room-payments.js', roles: ['admin', 'manager'] },
+    parkingLots: { title: 'Parking Lots', module: './views/parking-lots.js', roles: ['admin'] },
     parkingReservations: { title: 'Parking Reservations', module: './views/parking-reservations.js', roles: ['admin', 'manager'] },
+    parkingPayments: { title: 'Parking Payments', module: './views/parking-payments.js', roles: ['admin', 'manager'] },
     equipment: { title: 'Equipment', module: './views/equipment.js', roles: ['admin', 'manager'] }
 };
 

@@ -171,16 +171,30 @@ async function checkAvailableRooms() {
     const end = document.getElementById('res-end').value;
     const roomSelect = document.getElementById('res-room');
 
+    // Clear previous options
+    roomSelect.innerHTML = '<option value="">Loading available rooms...</option>';
+
     if (!start || !end) {
         alert('Please select both start and end dates first.');
+        roomSelect.innerHTML = '<option value="">Check availability first...</option>';
         return;
     }
 
-    roomSelect.innerHTML = '<option value="">Loading available rooms...</option>';
-
     try {
         const response = await fetchWithAuth(`/room-reservations/available?start_date=${start}&end_date=${end}`);
-        if (!response.ok) throw new Error('Failed to fetch available rooms');
+
+        if (!response.ok) {
+            // Attempt to parse the error message from the backend
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to fetch available rooms.';
+
+            if (errorData && errorData.message) {
+                // NestJS might return a string or an array of strings
+                errorMsg = Array.isArray(errorData.message) ? errorData.message.join(' | ') : errorData.message;
+            }
+
+            throw new Error(errorMsg);
+        }
 
         const availableRooms = await response.json();
 
@@ -191,9 +205,12 @@ async function checkAvailableRooms() {
 
         roomSelect.innerHTML = '<option value="">Select an available room...</option>' +
             availableRooms.map(r => `<option value="${r.id}">Room ${r.room_number} (Floor ${r.floor_number}, Beds: ${r.num_of_beds})</option>`).join('');
+
     } catch (error) {
-        roomSelect.innerHTML = '<option value="">Error fetching rooms</option>';
-        console.error(error);
+        // Display the specific backend error in the select box or via alert
+        roomSelect.innerHTML = `<option value="">Error: ${error.message}</option>`;
+        alert(`Error checking availability: ${error.message}`);
+        console.error('Availability check failed:', error);
     }
 }
 
@@ -260,24 +277,34 @@ async function handleFormSubmit(e) {
     submitBtn.disabled = true;
 
     try {
+        let response;
         if (isEditing) {
-            // PATCH only sends provided fields
-            const response = await fetchWithAuth(`/room-reservations/${id}`, {
+            response = await fetchWithAuth(`/room-reservations/${id}`, {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) throw new Error('Failed to update reservation');
-            messageDiv.innerHTML = `<span style="color: green;">Reservation updated successfully.</span>`;
         } else {
-            // POST logic
-            const response = await fetchWithAuth('/room-reservations', {
+            response = await fetchWithAuth('/room-reservations', {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) throw new Error('Failed to create reservation');
-            messageDiv.innerHTML = `<span style="color: green;">Reservation created successfully.</span>`;
         }
 
+        if (!response.ok) {
+            // Parse error response from the backend
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to save reservation.';
+
+            if (errorData && errorData.message) {
+                // NestJS can return a single string or an array of strings for validation errors
+                errorMsg = Array.isArray(errorData.message)
+                    ? errorData.message.join('<br>')
+                    : errorData.message;
+            }
+            throw new Error(errorMsg);
+        }
+
+        messageDiv.innerHTML = `<span style="color: green;">Reservation ${isEditing ? 'updated' : 'created'} successfully.</span>`;
         hideForm();
         await loadReservations();
     } catch (error) {

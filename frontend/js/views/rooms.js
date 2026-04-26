@@ -223,11 +223,22 @@ async function handleCategorySubmit(e) {
     if (nameVal) payload.category_name = nameVal;
 
     try {
+        let response;
         if (id) {
-            await fetchWithAuth(`/room-categories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+            response = await fetchWithAuth(`/room-categories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
         } else {
-            await fetchWithAuth('/room-categories', { method: 'POST', body: JSON.stringify(payload) });
+            response = await fetchWithAuth('/room-categories', { method: 'POST', body: JSON.stringify(payload) });
         }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to save category.';
+            if (errorData && errorData.message) {
+                errorMsg = Array.isArray(errorData.message) ? errorData.message.join('<br>') : errorData.message;
+            }
+            throw new Error(errorMsg);
+        }
+
         hideCategoryForm();
         await loadCategories(getUserRole() === 'admin');
         await loadRooms(); // Refresh rooms to update displayed category names
@@ -322,11 +333,22 @@ async function handleRoomSubmit(e) {
     };
 
     try {
+        let response;
         if (id) {
-            await fetchWithAuth(`/rooms/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+            response = await fetchWithAuth(`/rooms/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
         } else {
-            await fetchWithAuth('/rooms', { method: 'POST', body: JSON.stringify(payload) });
+            response = await fetchWithAuth('/rooms', { method: 'POST', body: JSON.stringify(payload) });
         }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            let errorMsg = 'Failed to save room.';
+            if (errorData && errorData.message) {
+                errorMsg = Array.isArray(errorData.message) ? errorData.message.join('<br>') : errorData.message;
+            }
+            throw new Error(errorMsg);
+        }
+
         hideRoomForm();
         await loadRooms();
         msg.innerHTML = `<span style="color: green;">Room saved.</span>`;
