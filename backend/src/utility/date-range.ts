@@ -9,6 +9,12 @@ export const ensureDateRangeIsValid = ( startDate: string, endDate: string ): vo
 		throw new BadRequestException( "One or both dates are invalid." );
 	}
 
+	const today = new Date();
+	if ( start < today || end < today )
+	{
+		throw new BadRequestException( "Reservations cannot be made in the past." );
+	}
+
 	if ( start > end )
 	{
 		throw new BadRequestException(

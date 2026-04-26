@@ -33,9 +33,7 @@ import {RoomCategory} from "./types";
 
 		if ( !category )
 		{
-			throw new NotFoundException(
-			    `Room category with id ${id} not found`,
-			);
+			throw new NotFoundException( `Room category with id ${id} not found` );
 		}
 
 		return category;

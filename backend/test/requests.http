@@ -54,7 +54,7 @@ POST {{baseUrl}}/users
 {{json}}
 
 {
-  "email": "manager1@example.com",
+  "email": "manager@example.com",
   "password": "password123",
   "role": "manager"
 }
@@ -203,12 +203,13 @@ POST {{baseUrl}}/rooms
 
 ###
 # Update room
-PATCH {{baseUrl}}/rooms/2
+PATCH {{baseUrl}}/rooms/1
 {{auth}}
 {{json}}
 
 {
-  "room_number": 201
+  "room_number": 201,
+  "id_category": 1
 }
 
 ###
@@ -246,12 +247,12 @@ POST {{baseUrl}}/room-reservations
   "start_date_reserv": "2026-05-01",
   "end_date_reserv": "2026-05-30",
   "id_room": 2,
-  "id_resident": 2
+  "id_resident": 1
 }
 
 ###
 # Update reservation
-PATCH {{baseUrl}}/room-reservations/13
+PATCH {{baseUrl}}/room-reservations/2
 {{auth}}
 {{json}}
 
@@ -423,22 +424,24 @@ POST {{baseUrl}}/parking-lots
 
 {
   "parking_lot_type": "covered",
-  "placement": "Building A - underground"
+  "placement": "Building A - underground",
+  "daily_rate": 5.00
 }
 
 ###
 # Update parking lot
-PATCH {{baseUrl}}/parking-lots/1
+PATCH {{baseUrl}}/parking-lots/6
 {{auth}}
 {{json}}
 
 {
-  "placement": "Building B - north side"
+  "placement": "Building B - north side",
+  "daily_rate": 6.00
 }
 
 ###
 # Delete parking lot
-DELETE {{baseUrl}}/parking-lots/2
+DELETE {{baseUrl}}/parking-lots/7
 {{auth}}
 
 ###
@@ -470,13 +473,13 @@ POST {{baseUrl}}/parking-reservations
 {
   "start_date_reserv": "2026-06-20",
   "end_date_reserv": "2026-06-21",
-  "id_parking_lot": 1,
+  "id_parking_lot": 6,
   "id_resident": 1
 }
 
 ###
 # Update parking reservation
-PATCH {{baseUrl}}/parking-reservations/2
+PATCH {{baseUrl}}/parking-reservations/1
 {{auth}}
 {{json}}
 
@@ -533,9 +536,5 @@ PATCH {{baseUrl}}/parking-payments/1
 DELETE {{baseUrl}}/parking-payments/1
 {{auth}}
 
-
 # TODO
-# add payment trigger after reservation (for parking and room reservation)
-# ensure reservation before today can't be done
-# 
 # frontend: add information about why operation can't be done
