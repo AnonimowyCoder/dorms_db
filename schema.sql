@@ -60,6 +60,7 @@ ALTER TABLE public.equipment ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 CREATE TABLE public.parking_lots (
     id integer NOT NULL,
+    daily_rate numeric(12,2) NOT NULL,
     parking_lot_type text,
     placement text
 );
@@ -100,10 +101,16 @@ CREATE TABLE public.parking_payments (
 
 CREATE TABLE public.parking_reservations (
     id integer NOT NULL,
-    start_date_reserv date,
-    end_date_reserv date,
+    start_date_reserv date NOT NULL,
+    end_date_reserv date NOT NULL,
     id_parking_lot integer NOT NULL,
-    id_resident integer
+    id_resident integer,
+    CONSTRAINT parking_reservations_dates_chk
+        CHECK (
+            start_date_reserv >= CURRENT_DATE
+            AND end_date_reserv >= CURRENT_DATE
+            AND end_date_reserv >= start_date_reserv
+        )
 );
 
 
@@ -157,9 +164,9 @@ ALTER TABLE public.residents ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 CREATE TABLE public.room_categories (
     id integer NOT NULL,
-    monthly_rent real NOT NULL,
-    if_kitchen boolean,
-    category_name text
+    monthly_rent numeric(12,2) NOT NULL,
+    if_kitchen boolean NOT NULL,
+    category_name text NOT NULL
 );
 
 
@@ -212,7 +219,12 @@ CREATE TABLE public.room_reservations (
     start_date_reserv date NOT NULL,
     end_date_reserv date NOT NULL,
     id_room integer NOT NULL,
-    id_resident integer
+    id_resident integer,
+        CHECK (
+            start_date_reserv >= CURRENT_DATE
+            AND end_date_reserv >= CURRENT_DATE
+            AND end_date_reserv >= start_date_reserv
+        )
 );
 
 
@@ -465,7 +477,119 @@ ADD CONSTRAINT room_payments_id_reservation_key UNIQUE (id_reservation);
 
 ALTER TABLE public.parking_payments
 ADD CONSTRAINT parking_payments_id_parking_reservation_key UNIQUE (id_parking_reservation);
-    
+
+CREATE OR REPLACE FUNCTION public.upsert_room_payment()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_monthly_rent numeric(12,2);
+    v_days integer;
+    v_amount numeric(12,2);
+BEGIN
+    SELECT rc.monthly_rent
+    INTO v_monthly_rent
+    FROM public.rooms r
+    JOIN public.room_categories rc
+      ON rc.id = r.id_category
+    WHERE r.id = NEW.id_room;
+
+    IF v_monthly_rent IS NULL THEN
+        RAISE EXCEPTION 'No monthly rent found for room id %', NEW.id_room;
+    END IF;
+
+    v_days := (NEW.end_date_reserv - NEW.start_date_reserv) + 1;
+
+    IF v_days <= 0 THEN
+        RAISE EXCEPTION 'Invalid room reservation period for reservation id %', NEW.id;
+    END IF;
+
+    v_amount := round((v_monthly_rent / 30.0) * v_days, 2);
+
+    INSERT INTO public.room_payments (
+        id_reservation,
+        amount,
+        payment_due_date,
+        amount_payed
+    )
+    VALUES (
+        NEW.id,
+        v_amount,
+        NEW.start_date_reserv,
+        0.00
+    )
+    ON CONFLICT (id_reservation)
+    DO UPDATE SET
+        amount = EXCLUDED.amount,
+        payment_due_date = EXCLUDED.payment_due_date;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_upsert_room_payment
+AFTER INSERT OR UPDATE OF start_date_reserv, end_date_reserv, id_room
+ON public.room_reservations
+FOR EACH ROW
+EXECUTE FUNCTION public.upsert_room_payment();
+
+CREATE OR REPLACE FUNCTION public.upsert_parking_payment()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_daily_rate numeric(12,2);
+    v_days integer;
+    v_amount numeric(12,2);
+BEGIN
+    SELECT pl.daily_rate
+    INTO v_daily_rate
+    FROM public.parking_lots pl
+    WHERE pl.id = NEW.id_parking_lot;
+
+    IF v_daily_rate IS NULL THEN
+        RAISE EXCEPTION 'No daily rate found for parking lot id %', NEW.id_parking_lot;
+    END IF;
+
+    IF NEW.start_date_reserv IS NULL OR NEW.end_date_reserv IS NULL THEN
+        RAISE EXCEPTION 'Parking reservation dates cannot be NULL for reservation id %', NEW.id;
+    END IF;
+
+    v_days := (NEW.end_date_reserv - NEW.start_date_reserv) + 1;
+
+    IF v_days <= 0 THEN
+        RAISE EXCEPTION 'Invalid parking reservation period for reservation id %', NEW.id;
+    END IF;
+
+    v_amount := round(v_daily_rate * v_days, 2);
+
+    INSERT INTO public.parking_payments (
+        id_parking_reservation,
+        amount,
+        payment_due_date,
+        amount_payed
+    )
+    VALUES (
+        NEW.id,
+        v_amount,
+        NEW.start_date_reserv,
+        0.00
+    )
+    ON CONFLICT (id_parking_reservation)
+    DO UPDATE SET
+        amount = EXCLUDED.amount,
+        payment_due_date = EXCLUDED.payment_due_date;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_upsert_parking_payment
+AFTER INSERT OR UPDATE OF start_date_reserv, end_date_reserv, id_parking_lot
+ON public.parking_reservations
+FOR EACH ROW
+EXECUTE FUNCTION public.upsert_parking_payment();
+
 -- Completed on 2026-04-13 15:12:13
 
 --
